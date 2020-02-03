@@ -68,11 +68,9 @@ class DFA:
     def match(self, string_to_match):
         curr_state = self.start_state
         for curr_char in string_to_match:
-            print(id(curr_state))
             if curr_char in curr_state.transitions:
                 curr_state = curr_state.transitions[curr_char]
             else:
-                print('failed on ', curr_char, id(curr_state))
                 return False
 
         return curr_state.accepting

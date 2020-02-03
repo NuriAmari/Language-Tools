@@ -86,7 +86,7 @@ class Union(NFA):
 class Concat(NFA):
     def __init__(self, left_operand, right_operand):
         super().__init__(start_state=left_operand.start_state, end_state=right_operand.end_state)
-        print('b.end', id(right_operand.end_state), 'cab.end', id(self.end_state))
+
         self.left_operand = left_operand
         self.right_operand = right_operand
 

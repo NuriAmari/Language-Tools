@@ -1,3 +1,0 @@
-class Atom: public NFA {
-    
-};
