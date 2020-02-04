@@ -29,24 +29,33 @@ class DFA:
         q = deque([start_state])
         while q:
             curr_dfa_state = frozenset(q.pop())
-            available_transition_chars = set()
+            cut = set()
+            loops = set()
             for nfa_state in curr_dfa_state:
                 for transition_char in nfa_state.transitions.keys():
-                    if transition_char != '':
-                        available_transition_chars.add(transition_char)
+                    if transition_char != '' and len(nfa_state.transitions[transition_char]) > 0:
+                        for neighbour in nfa_state.transitions[transition_char]:
+                            if neighbour not in curr_dfa_state:
+                                cut.add(transition_char)
+                                break
+                        else:
+                            loops.add(transition_char)
 
-            for transition_char in available_transition_chars:
+            for transition_char in cut:
                 transition_char_closure = set()
                 is_accepting_state = False
                 for nfa_state in curr_dfa_state:
                     is_accepting_state = is_accepting_state or DFA.find_closure(nfa_state, transition_char_closure, transition_char)
                
-                transition_char_closure = frozenset(transition_char_closure)
+                transition_char_closure = frozenset([state for state in transition_char_closure if state not in curr_dfa_state])
                 if transition_char_closure not in dfa_states:
                     q.appendleft(transition_char_closure)
                     dfa_states[transition_char_closure] = DFAState(accepting=is_accepting_state)
 
                 dfa_states[curr_dfa_state].set_transition(transition_char, dfa_states[transition_char_closure])
+
+            for transition_char in loops:
+                dfa_states[curr_dfa_state].set_transition(transition_char, dfa_states[curr_dfa_state])
 
     @staticmethod
     def find_closure(start_state, states_reached, symbol_to_process):

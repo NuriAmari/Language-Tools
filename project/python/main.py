@@ -2,9 +2,7 @@ from lexer.tokens.symbols import INTEGER
 from lexer.nfa import *
 from lexer.dfa import DFA
 
-one = Atom('1')
-two = Atom('2')
-three = Atom('3')
+test = ['123', '0123', '1', '444', '432432523532523432423', 'abc']
 
-onetwothree = DFA(Concat.batch_init([one, two, three]))
-print('123', onetwothree.match('123'))
+for num in test:
+    print(num, INTEGER.match(num))
