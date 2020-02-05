@@ -1,119 +1,119 @@
 import unittest
-from unittest import TestCase
 
-from lexer.nfa import Atom, Concat, Epsilon, KleeneStar, Union
+from lexer.nfa import *
 from lexer.dfa import DFA
 
 
-class AtomTests(TestCase):
+class AtomTests(unittest.TestCase):
 
-    def setUp(self):
-        self.a = DFA(Atom('a'))
-        self.b = DFA(Atom('b'))
-        self.eight = DFA(Atom('8'))
-        self.comma = DFA(Atom(','))
+    @classmethod
+    def setUpClass(cls):
+        cls.a = DFA(Atom('a'))
+        cls.b = DFA(Atom('b'))
+        cls.eight = DFA(Atom('8'))
+        cls.comma = DFA(Atom(','))
 
     def test__match__HappyPath__SuccessfulMatch(self):
 
-        self.assertTrue(self.a.match('a'))
-        self.assertTrue(self.b.match('b'))
-        self.assertTrue(self.eight.match('8'))
-        self.assertTrue(self.comma.match(','))
+        self.assertTrue(self.__class__.a.match('a'))
+        self.assertTrue(self.__class__.b.match('b'))
+        self.assertTrue(self.__class__.eight.match('8'))
+        self.assertTrue(self.__class__.comma.match(','))
 
     def test__match__Mismatch__UnsuccesfulMatch(self):
 
-        self.assertFalse(self.a.match('b'))
-        self.assertFalse(self.a.match('ab'))
-        self.assertFalse(self.b.match('ab'))
-        self.assertFalse(self.eight.match('9'))
-        self.assertFalse(self.eight.match('89'))
-        self.assertFalse(self.comma.match('{'))
-        self.assertFalse(self.comma.match(''))
+        self.assertFalse(self.__class__.a.match('b'))
+        self.assertFalse(self.__class__.a.match('ab'))
+        self.assertFalse(self.__class__.b.match('ab'))
+        self.assertFalse(self.__class__.eight.match('9'))
+        self.assertFalse(self.__class__.eight.match('89'))
+        self.assertFalse(self.__class__.comma.match('{'))
+        self.assertFalse(self.__class__.comma.match(''))
 
 
-class EpsilonTests(TestCase):
-    pass
+class ConcatTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.a = Atom('a')
+        cls.b = Atom('b')
+        cls.c = Atom('c')
+        cls.abc = DFA(Concat(cls.a, cls.b, cls.c))
+
+    def test__match__HappyPath__SuccessfulMatch(self):
+
+        self.assertTrue(self.__class__.abc.match('abc'))
+
+    def test__match__Mismatch__UnsuccesfulMatch(self):
+
+        self.assertFalse(self.__class__.abc.match('a'))
+        self.assertFalse(self.__class__.abc.match('abcd'))
+        self.assertFalse(self.__class__.abc.match('d'))
+        self.assertFalse(self.__class__.abc.match(''))
 
 
-class ConcatTests(TestCase):
+class UnionTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.a = Atom('a')
+        cls.b = Atom('b')
+        cls.c = Atom('c')
+        cls.a_or_b_or_c = DFA(Union(cls.a, cls.b, cls.c))
+
+    def test__match__HappyPath__SuccessfulMatch(self):
+
+        self.assertTrue(self.__class__.a_or_b_or_c.match('a'))
+        self.assertTrue(self.__class__.a_or_b_or_c.match('b'))
+        self.assertTrue(self.__class__.a_or_b_or_c.match('c'))
+
+    def test__match__Mismatch__UnsuccesfulMatch(self):
+
+        self.assertFalse(self.__class__.a_or_b_or_c.match('d'))
+        self.assertFalse(self.__class__.a_or_b_or_c.match('ab'))
+        self.assertFalse(self.__class__.a_or_b_or_c.match('bc'))
+        self.assertFalse(self.__class__.a_or_b_or_c.match('abc'))
+        self.assertFalse(self.__class__.a_or_b_or_c.match(''))
+
+
+class KleeneStarTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+
+        cls.a = Atom('a')
+        cls.a_star = DFA(KleeneStar(cls.a))
+
+    def test__match__HappyPath__SuccessfulMatch(self):
+
+        self.assertTrue(self.__class__.a_star.match(''))
+        self.assertTrue(self.__class__.a_star.match('a'))
+        self.assertTrue(self.__class__.a_star.match('aa'))
+        self.assertTrue(self.__class__.a_star.match(
+            'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'))
+
+    def test__match__Mismatch__UnsuccesfulMatch(self):
+
+        self.assertFalse(self.__class__.a_star.match('b'))
+        self.assertFalse(self.__class__.a_star.match('ab'))
+        self.assertFalse(self.__class__.a_star.match('aaaaaaaaaaaaaab'))
+        self.assertFalse(self.__class__.a_star.match(
+            'baaaaaaaaaaaaaaaaaaaaaaaa'))
+
+
+class RegexIntegrationTests(unittest.TestCase):
 
     def setUp(self):
 
         self.a = Atom('a')
         self.b = Atom('b')
-        self.c = Atom('c')
-        self.abc = DFA(Concat.batch_init([self.a, self.b, self.c]))
-
-    def test__match__HappyPath__SuccessfulMatch(self):
-
-        self.assertTrue(self.abc.match('abc'))
-
-    def test__match__Mismatch__UnsuccesfulMatch(self):
-        
-        self.assertFalse(self.abc.match('a'))
-        self.assertFalse(self.abc.match('abcd'))
-        self.assertFalse(self.abc.match('d'))
-        self.assertFalse(self.abc.match(''))
-
-
-class UnionTests(TestCase):
-
-    def setUp(self):
-
-        self.a = Atom('a')
-        self.b = Atom('b')
-        self.c = Atom('c')
-        self.a_or_b_or_c = DFA(Union.batch_init([self.a,self.b,self.c]))
-
-    def test__match__HappyPath__SuccessfulMatch(self):
-
-        self.assertTrue(self.a_or_b_or_c.match('a'))
-        self.assertTrue(self.a_or_b_or_c.match('b'))
-        self.assertTrue(self.a_or_b_or_c.match('c'))
-
-    def test__match__Mismatch__UnsuccesfulMatch(self):
-
-        self.assertFalse(self.a_or_b_or_c.match('d'))
-        self.assertFalse(self.a_or_b_or_c.match('ab'))
-        self.assertFalse(self.a_or_b_or_c.match('bc'))
-        self.assertFalse(self.a_or_b_or_c.match('abc'))
-        self.assertFalse(self.a_or_b_or_c.match(''))
-
-
-class KleeneStarTests(TestCase):
-
-    def setUp(self):
-
-        self.a = Atom('a')
-        self.a_star = DFA(KleeneStar(self.a))
-
-    def test__match__HappyPath__SuccessfulMatch(self):
-
-        self.assertTrue(self.a_star.match(''))
-        self.assertTrue(self.a_star.match('a'))
-        self.assertTrue(self.a_star.match('aa'))
-        self.assertTrue(self.a_star.match('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'))
-
-    def test__match__Mismatch__UnsuccesfulMatch(self):
-
-        self.assertFalse(self.a_star.match('b'))
-        self.assertFalse(self.a_star.match('ab'))
-        self.assertFalse(self.a_star.match('aaaaaaaaaaaaaab'))
-        self.assertFalse(self.a_star.match('baaaaaaaaaaaaaaaaaaaaaaaa'))
-
-
-class RegexIntegrationTests(TestCase):
-
-    def setUp(self):
-
-        self.a = Atom('a')
-        self.b = Atom('b')
-        self.a_or_b_star = DFA(KleeneStar(Union(self.a,self.b)))
+        self.a_or_b_star = DFA(KleeneStar(Union(self.a, self.b)))
 
     def test__match__HappyPath__SuccessfulMatch(self):
 
         self.assertTrue(self.a_or_b_star.match('abababbababababababa'))
         self.assertTrue(self.a_or_b_star.match('aaaaaaaaaaaaaaaaa'))
+
 
 if __name__ == '__main__':
     unittest.main()

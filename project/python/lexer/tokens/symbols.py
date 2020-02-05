@@ -15,5 +15,5 @@ NINE = Atom('9')
 DIGITS = [ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
 NON_ZERO_DIGITS = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
 
-INTEGER = DFA(Concat(KleeneStar(Union.batch_init(NON_ZERO_DIGITS)), KleeneStar(Union.batch_init(DIGITS))))
+INTEGER = DFA(Concat(KleeneStar(Union(*NON_ZERO_DIGITS)), KleeneStar(Union(*DIGITS))))
 

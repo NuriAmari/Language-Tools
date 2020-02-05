@@ -5,12 +5,10 @@ from lexer.state import State
 
 class NFA(ABC):
 
-    def __init__(self, start_state, end_state):
+    def __init__(self, start_state, end_state, alphabet):
         self.start_state = start_state
         self.end_state = end_state
-
-    def __str__(self):
-        return self.to_string()
+        self.alphabet = alphabet
 
     def recognize(self, input_string):
         pass
@@ -28,21 +26,16 @@ class NFA(ABC):
                     print('End states should be the only path')
         self.end_state = new_end_state
 
-    @abstractmethod
-    def to_string(self):
-        pass
-
 
 class Atom(NFA):
 
     def __init__(self, char):
-        super().__init__(start_state=State(), end_state=State(accepting=True))
+        super().__init__(start_state=State(), end_state=State(accepting=True), alphabet=frozenset(char))
         self.transition_char = char
-        self.start_state.add_transition(
-            transition_char=char, target_state=self.end_state)
+        self.start_state.add_transition( transition_char=char, target_state=self.end_state)
 
-    def to_string(self):
-        return self.transition_char
+    # def __repr__(self):
+    #     return f'{str(self.start_state)}\n{str(self.end_state)}'
 
 
 class Epsilon(NFA):
@@ -52,71 +45,62 @@ class Epsilon(NFA):
         self.start_state.add_transition(
             transition_char='', target_state=self.end_state)
 
-    def to_string(self):
+    def __repr__(self):
         return '__e__'
 
 
 class Union(NFA):
 
-    def __init__(self, left_operand, right_operand):
-        super().__init__(start_state=State(), end_state=State(accepting=True))
+    def __init__(self, *operands):
 
-        self.left_operand = left_operand
-        self.right_operand = right_operand
+        if len(operands) < 2:
+            raise Exception('Union must be passed >= 2 operands')
 
-        self.start_state.add_transition( transition_char='', target_state=left_operand.start_state)
-        self.start_state.add_transition( transition_char='', target_state=right_operand.start_state)
+        collective_alphabet = frozenset().union(*[operand.alphabet for operand in operands])
+        super().__init__(start_state=State(), end_state=State(accepting=True), alphabet=collective_alphabet)
 
-        left_operand.replace_end_state(self.end_state)
-        right_operand.replace_end_state(self.end_state)
+        self.operands = operands
 
-    @classmethod
-    def batch_init(cls, batch, batch_cursor=0):
-        if len(batch) - batch_cursor < 2:
-           raise Exception('Union batch_init requires batch size >= 2') 
-        if len(batch) - batch_cursor == 2:
-            return cls(left_operand=batch[batch_cursor], right_operand=batch[batch_cursor+1])
-        else:
-            return cls(left_operand=batch[batch_cursor], right_operand=cls.batch_init(batch, batch_cursor + 1))
+        for operand in operands:
+            self.start_state.add_transition(
+                transition_char='', target_state=operand.start_state)
+            operand.replace_end_state(self.end_state)
 
-
-    def to_string(self):
-        return self.left_operand.to_string() + '|' + self.right_operand.to_string()
+    # def __repr__(self):
+    #     lines = [str(self.start_state)] + [str(operand) for operand in self.operands]
+    #     return '\n'.join(lines)
 
 class Concat(NFA):
-    def __init__(self, left_operand, right_operand):
-        super().__init__(start_state=left_operand.start_state, end_state=right_operand.end_state)
 
-        self.left_operand = left_operand
-        self.right_operand = right_operand
+    def __init__(self, *operands):
 
-        left_operand.replace_end_state(right_operand.start_state)
+        if len(operands) < 2:
+            raise Exception('Concat must be passed >= 2 operands')
 
+        collective_alphabet = frozenset().union(*[operand.alphabet for operand in operands])
+        super().__init__( start_state=operands[0].start_state, end_state=operands[-1].end_state, alphabet=collective_alphabet)
 
-    @classmethod
-    def batch_init(cls, batch, batch_cursor=0):
-        if len(batch) - batch_cursor < 2:
-           raise Exception('Concat batch_init requires batch size >= 2') 
-        if len(batch) - batch_cursor == 2:
-            return cls(left_operand=batch[batch_cursor], right_operand=batch[batch_cursor+1])
-        else:
-            return cls(left_operand=batch[batch_cursor], right_operand=cls.batch_init(batch, batch_cursor + 1))
+        self.operands = operands
 
-    def to_string(self):
-        return self.left_operand.to_string() + self.right_operand.to_string()
+        for i in range(len(operands) - 1):
+            operands[i].replace_end_state(operands[i+1].start_state)
 
+    # def __repr__(self):
+    #     lines = [str(operand) for operand in self.operands]
+    #     return '\n'.join(lines)
 
 class KleeneStar(NFA):
 
     def __init__(self, operand):
-        start_state = end_state = State(accepting=True)
-        super().__init__(start_state=start_state, end_state=end_state) 
+        start_state=end_state=State(accepting=True)
+        super().__init__(start_state=start_state, end_state=end_state, alphabet=operand.alphabet)
 
-        self.operand = operand
+        self.operand=operand
 
-        self.start_state.add_transition(transition_char='', target_state=operand.start_state)
+        self.start_state.add_transition(
+            transition_char='', target_state=operand.start_state)
 
         operand.replace_end_state(self.end_state)
 
-    def to_string(self):
-        return '(' + self.operand.to_string() + ')*'
+    # def __repr__(self):
+    #     return str(self.operand)
