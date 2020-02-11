@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from lexer.state import State
+from lexer.state import NFAState
 
 
 class NFA(ABC):
@@ -30,18 +30,18 @@ class NFA(ABC):
 class Atom(NFA):
 
     def __init__(self, char):
-        super().__init__(start_state=State(), end_state=State(accepting=True), alphabet=frozenset(char))
+        super().__init__(start_state=NFAState(), end_state=NFAState(accepting=True), alphabet=frozenset(char))
         self.transition_char = char
         self.start_state.add_transition( transition_char=char, target_state=self.end_state)
 
-    # def __repr__(self):
-    #     return f'{str(self.start_state)}\n{str(self.end_state)}'
+    def __repr__(self):
+        return f'{str(self.start_state)}\n{str(self.end_state)}'
 
 
 class Epsilon(NFA):
 
     def __init__(self):
-        super().__init__(start_state=State(), end_state=State(accepting=True))
+        super().__init__(start_state=NFAState(), end_state=NFAState(accepting=True))
         self.start_state.add_transition(
             transition_char='', target_state=self.end_state)
 
@@ -57,7 +57,7 @@ class Union(NFA):
             raise Exception('Union must be passed >= 2 operands')
 
         collective_alphabet = frozenset().union(*[operand.alphabet for operand in operands])
-        super().__init__(start_state=State(), end_state=State(accepting=True), alphabet=collective_alphabet)
+        super().__init__(start_state=NFAState(), end_state=NFAState(accepting=True), alphabet=collective_alphabet)
 
         self.operands = operands
 
@@ -66,9 +66,9 @@ class Union(NFA):
                 transition_char='', target_state=operand.start_state)
             operand.replace_end_state(self.end_state)
 
-    # def __repr__(self):
-    #     lines = [str(self.start_state)] + [str(operand) for operand in self.operands]
-    #     return '\n'.join(lines)
+    def __repr__(self):
+        lines = [str(self.start_state)] + [str(operand) for operand in self.operands]
+        return '\n'.join(lines)
 
 class Concat(NFA):
 
@@ -85,14 +85,14 @@ class Concat(NFA):
         for i in range(len(operands) - 1):
             operands[i].replace_end_state(operands[i+1].start_state)
 
-    # def __repr__(self):
-    #     lines = [str(operand) for operand in self.operands]
-    #     return '\n'.join(lines)
+    def __repr__(self):
+        lines = [str(operand) for operand in self.operands]
+        return '\n'.join(lines)
 
 class KleeneStar(NFA):
 
     def __init__(self, operand):
-        start_state=end_state=State(accepting=True)
+        start_state=end_state=NFAState(accepting=True)
         super().__init__(start_state=start_state, end_state=end_state, alphabet=operand.alphabet)
 
         self.operand=operand
@@ -102,5 +102,5 @@ class KleeneStar(NFA):
 
         operand.replace_end_state(self.end_state)
 
-    # def __repr__(self):
-    #     return str(self.operand)
+    def __repr__(self):
+        return str(self.operand)

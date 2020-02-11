@@ -29,6 +29,7 @@ class DFA:
                     is_accepting_state = is_accepting_state or DFA.find_closure(nfa_state, transition_char_closure, transition_char, False)
                
                 transition_char_closure = frozenset(transition_char_closure)
+                print('round', transition_char_closure)
 
                 if len(transition_char_closure) > 0:
 
