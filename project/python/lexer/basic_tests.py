@@ -108,12 +108,23 @@ class RegexIntegrationTests(unittest.TestCase):
         self.a = Atom('a')
         self.b = Atom('b')
         self.a_or_b_star = DFA(KleeneStar(Union(self.a, self.b)))
+        self.ab_star = DFA(KleeneStar(Concat(self.a, self.b)))
 
     def test__match__HappyPath__SuccessfulMatch(self):
 
         self.assertTrue(self.a_or_b_star.match('abababbababababababa'))
+        self.assertTrue(self.a_or_b_star.match(''))
         self.assertTrue(self.a_or_b_star.match('aaaaaaaaaaaaaaaaa'))
+        self.assertTrue(self.ab_star.match(''))
+        self.assertTrue(self.ab_star.match('ab'))
+        self.assertTrue(self.ab_star.match('ababababababababababab'))
 
+    def test__match__Mismatch__SuccessfulMatch(self):
+
+        self.assertFalse(self.ab_star.match('a'))
+        self.assertFalse(self.ab_star.match('aba'))
+        self.assertFalse(self.ab_star.match('ba'))
+        self.assertFalse(self.a_or_b_star.match('abc'))
 
 if __name__ == '__main__':
     unittest.main()

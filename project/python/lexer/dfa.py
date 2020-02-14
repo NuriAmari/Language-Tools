@@ -1,5 +1,8 @@
 from collections import defaultdict, deque
 
+import networkx as nx
+import matplotlib.pyplot as plt
+
 from lexer.state import DFAState
 
 
@@ -13,7 +16,6 @@ class DFA:
         # find initial epsilon closure to start building from
         start_state = set()
         DFA.find_epsilon_closure(nfa_to_convert.start_state, start_state)
-        print('start state', nfa_to_convert.start_state)
 
         self.start_state = DFAState(accepting=nfa_to_convert.start_state.accepting)
         dfa_states[frozenset(start_state)] = self.start_state
@@ -29,7 +31,6 @@ class DFA:
                     is_accepting_state = is_accepting_state or DFA.find_closure(nfa_state, transition_char_closure, transition_char, False)
                
                 transition_char_closure = frozenset(transition_char_closure)
-                print('round', transition_char_closure)
 
                 if len(transition_char_closure) > 0:
 
@@ -39,7 +40,6 @@ class DFA:
 
                     dfa_states[curr_dfa_state].set_transition(transition_char, dfa_states[transition_char_closure])
 
-        print('aaaaaaaaaaaaaa', dfa_states.keys())
         self.states = dfa_states.values()
 
     def __repr__(self):
@@ -51,7 +51,7 @@ class DFA:
 
     @staticmethod
     def find_closure(start_state, states_reached, symbol_to_process, symbol_used):
-        accepting_found = start_state.accepting
+        accepting_found = False 
         for epsilon_neighbour in start_state.transitions['']:
             if symbol_used:
                 states_reached.add(epsilon_neighbour)
@@ -81,3 +81,30 @@ class DFA:
                 return False
 
         return curr_state.accepting
+
+    def visualize(self):
+        state_ids = dict()
+        num_states = 0 
+
+        for state in self.states:
+            num_states += 1
+            print(num_states)
+            state_ids[id(state)] = num_states
+
+        print('----')
+
+        def state_tag(state):
+            state_tag = ''
+            if state.accepting:
+                state_tag += 'A'
+            if state == self.start_state:
+                state_tag += 'S'
+            return state_tag
+
+        for state in self.states:
+            num_states 
+            state_id = state_ids[id(state)]
+            for transition_char in state.transitions.keys():
+                neighbour = state.transitions[transition_char]
+                neighbour_id = state_ids[id(neighbour)]
+                print(f'{state_id}{state_tag(state)}-{transition_char}->{neighbour_id}{state_tag(neighbour)}')

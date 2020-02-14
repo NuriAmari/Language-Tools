@@ -1,14 +1,17 @@
 from abc import ABC, abstractmethod
+from functools import reduce
+from copy import deepcopy
 
 from lexer.state import NFAState
 
 
 class NFA(ABC):
 
-    def __init__(self, start_state, end_state, alphabet):
+    def __init__(self, start_state, end_state, alphabet, states):
         self.start_state = start_state
         self.end_state = end_state
         self.alphabet = alphabet
+        self.states = states
 
     def recognize(self, input_string):
         pass
@@ -16,26 +19,45 @@ class NFA(ABC):
     def to_DFA(self):
         pass
 
-    def replace_end_state(self, new_end_state):
-        for in_neighbour in self.end_state.in_neighbours:
-            for target_states in in_neighbour.transitions.values():
-                if self.end_state in target_states:
-                    target_states.remove(self.end_state)
-                    target_states.add(new_end_state)
-                else:
-                    print('End states should be the only path')
-        self.end_state = new_end_state
+    def visualize(self):
+        state_ids = dict()
+        num_states = 0
+
+        print('^---^')
+
+        for state in self.states:
+            num_states += 1
+            print(num_states)
+            state_ids[id(state)] = num_states
+
+        print('----')
+
+        def state_tag(state):
+            state_tag = ''
+            if state.accepting:
+                state_tag += 'A'
+            if state == self.start_state:
+                state_tag += 'S'
+            return state_tag
+
+        for state in self.states:
+            num_states
+            state_id = state_ids[id(state)]
+            for transition_char in state.transitions.keys():
+                for neighbour in state.transitions[transition_char]:
+                    neighbour_id = state_ids[id(neighbour)]
+                    print(f'{state_id}{state_tag(state)}-{transition_char}->{neighbour_id}{state_tag(neighbour)}')
 
 
 class Atom(NFA):
 
     def __init__(self, char):
-        super().__init__(start_state=NFAState(), end_state=NFAState(accepting=True), alphabet=frozenset(char))
+        start_state = NFAState()
+        end_state = NFAState(accepting=True)
+        super().__init__(start_state=start_state, end_state=end_state,
+                         alphabet=frozenset(char), states=[start_state, end_state])
         self.transition_char = char
-        self.start_state.add_transition( transition_char=char, target_state=self.end_state)
-
-    def __repr__(self):
-        return f'{str(self.start_state)}\n{str(self.end_state)}'
+        self.start_state.add_transition(transition_char=char, target_state=self.end_state)
 
 
 class Epsilon(NFA):
@@ -45,9 +67,6 @@ class Epsilon(NFA):
         self.start_state.add_transition(
             transition_char='', target_state=self.end_state)
 
-    def __repr__(self):
-        return '__e__'
-
 
 class Union(NFA):
 
@@ -56,19 +75,21 @@ class Union(NFA):
         if len(operands) < 2:
             raise Exception('Union must be passed >= 2 operands')
 
+        operands = [deepcopy(operand) for operand in operands]
         collective_alphabet = frozenset().union(*[operand.alphabet for operand in operands])
-        super().__init__(start_state=NFAState(), end_state=NFAState(accepting=True), alphabet=collective_alphabet)
 
-        self.operands = operands
+        start_state = NFAState()
+        end_state = NFAState(accepting=True)
+
+        states = [start_state] + reduce(lambda a, b: a+b, [operand.states for operand in operands]) + [end_state]
+
+        super().__init__(start_state=start_state, end_state=end_state, alphabet=collective_alphabet, states=states)
 
         for operand in operands:
-            self.start_state.add_transition(
-                transition_char='', target_state=operand.start_state)
-            operand.replace_end_state(self.end_state)
+            start_state.add_transition(transition_char='', target_state=operand.start_state)
+            operand.end_state.add_transition(transition_char='', target_state=end_state)
+            operand.end_state.accepting = False
 
-    def __repr__(self):
-        lines = [str(self.start_state)] + [str(operand) for operand in self.operands]
-        return '\n'.join(lines)
 
 class Concat(NFA):
 
@@ -77,30 +98,41 @@ class Concat(NFA):
         if len(operands) < 2:
             raise Exception('Concat must be passed >= 2 operands')
 
+        operands = [deepcopy(operand) for operand in operands]
         collective_alphabet = frozenset().union(*[operand.alphabet for operand in operands])
-        super().__init__( start_state=operands[0].start_state, end_state=operands[-1].end_state, alphabet=collective_alphabet)
 
-        self.operands = operands
+        start_state = NFAState()
+        end_state = NFAState(accepting=True)
+
+        states = [start_state] + reduce(lambda a, b: a+b, [operand.states for operand in operands]) + [end_state]
+
+        super().__init__(start_state=start_state, end_state=end_state, alphabet=collective_alphabet, states=states)
+
+        start_state.add_transition(transition_char='', target_state=operands[0].start_state)
 
         for i in range(len(operands) - 1):
-            operands[i].replace_end_state(operands[i+1].start_state)
+            bridge_state = NFAState()
+            operands[i].end_state.add_transition('', bridge_state)
+            operands[i].end_state.accepting = False
+            bridge_state.add_transition('', operands[i+1].start_state)
 
-    def __repr__(self):
-        lines = [str(operand) for operand in self.operands]
-        return '\n'.join(lines)
+        operands[-1].end_state.accepting = False
+        operands[-1].end_state.add_transition(transition_char='', target_state=end_state)
 
 class KleeneStar(NFA):
 
     def __init__(self, operand):
-        start_state=end_state=NFAState(accepting=True)
-        super().__init__(start_state=start_state, end_state=end_state, alphabet=operand.alphabet)
 
-        self.operand=operand
+        operand = deepcopy(operand)
 
-        self.start_state.add_transition(
-            transition_char='', target_state=operand.start_state)
+        start_state = NFAState(accepting=True)
+        end_state = NFAState()
 
-        operand.replace_end_state(self.end_state)
+        states = [start_state] + operand.states + [end_state]
 
-    def __repr__(self):
-        return str(self.operand)
+        super().__init__(start_state=start_state, end_state=end_state, alphabet=operand.alphabet, states=states)
+
+        start_state.add_transition(transition_char='', target_state=operand.start_state)
+        end_state.add_transition(transition_char='', target_state=start_state)
+        operand.end_state.add_transition(transition_char='', target_state=end_state)
+        operand.end_state.accepting = False
