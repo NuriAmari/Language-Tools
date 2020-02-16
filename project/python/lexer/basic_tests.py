@@ -30,6 +30,21 @@ class AtomTests(unittest.TestCase):
         self.assertFalse(self.__class__.comma.match('{'))
         self.assertFalse(self.__class__.comma.match(''))
 
+class EpsilonTests(unittest.TestCase):
+
+    @classmethod
+    def setUpClass(cls):
+        cls.e = DFA(Epsilon())
+
+    def test__match__HappyPath__SuccessfulMatch(self):
+
+        self.assertTrue(self.__class__.e.match(''))
+
+    def test__match__Mismatch__UnsuccesfulMatch(self):
+
+        self.assertFalse(self.__class__.e.match('a'))
+        self.assertFalse(self.__class__.e.match('abcd'))
+        self.assertFalse(self.__class__.e.match('d'))
 
 class ConcatTests(unittest.TestCase):
 

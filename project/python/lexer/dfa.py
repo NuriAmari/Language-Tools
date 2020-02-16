@@ -1,9 +1,7 @@
 from collections import defaultdict, deque
 
-import networkx as nx
-import matplotlib.pyplot as plt
-
 from lexer.state import DFAState
+from lexer.exceptions import LexicalError
 
 
 class DFA:
@@ -29,7 +27,7 @@ class DFA:
                 is_accepting_state = False
                 for nfa_state in curr_dfa_state:
                     is_accepting_state = is_accepting_state or DFA.find_closure(nfa_state, transition_char_closure, transition_char, False)
-               
+
                 transition_char_closure = frozenset(transition_char_closure)
 
                 if len(transition_char_closure) > 0:
@@ -37,6 +35,7 @@ class DFA:
                     if transition_char_closure not in dfa_states:
                         q.appendleft(transition_char_closure)
                         dfa_states[transition_char_closure] = DFAState(accepting=is_accepting_state)
+                        dfa_states[transition_char_closure].tokens = set().union(*[state.tokens for state in transition_char_closure])
 
                     dfa_states[curr_dfa_state].set_transition(transition_char, dfa_states[transition_char_closure])
 
@@ -51,7 +50,7 @@ class DFA:
 
     @staticmethod
     def find_closure(start_state, states_reached, symbol_to_process, symbol_used):
-        accepting_found = False 
+        accepting_found = False
         for epsilon_neighbour in start_state.transitions['']:
             if symbol_used:
                 states_reached.add(epsilon_neighbour)
@@ -84,7 +83,7 @@ class DFA:
 
     def visualize(self):
         state_ids = dict()
-        num_states = 0 
+        num_states = 0
 
         for state in self.states:
             num_states += 1
@@ -102,9 +101,64 @@ class DFA:
             return state_tag
 
         for state in self.states:
-            num_states 
+            num_states
             state_id = state_ids[id(state)]
             for transition_char in state.transitions.keys():
                 neighbour = state.transitions[transition_char]
                 neighbour_id = state_ids[id(neighbour)]
                 print(f'{state_id}{state_tag(state)}-{transition_char}->{neighbour_id}{state_tag(neighbour)}')
+
+def tokenize(input_stream, tokenizing_dfa):
+    """
+    Performs simplified maximal munch on the input stream
+        <input_stream> The text stream providing the text to be tokenized
+        <tokenizing_dfa> The dfa defining tokens
+        <priority_mapping> A map from token to priority, used to resolve tokenization ambiguities
+    """
+    file_pos = 0
+    last_accepting_file_pos = -1
+    last_accepting_state = None
+    curr_state = tokenizing_dfa.start_state
+    tokens = []
+    curr_token = []
+
+    def resolve_transition_error():
+        nonlocal last_accepting_state
+        nonlocal input_stream
+        nonlocal file_pos
+        nonlocal tokens
+        nonlocal curr_state
+        nonlocal curr_token
+
+        if last_accepting_state:
+            input_stream.seek(last_accepting_file_pos)
+            file_pos = last_accepting_file_pos
+            tokens.append(last_accepting_state.resolve_token(''.join(curr_token)))
+            last_accepting_state = None
+            curr_state = tokenizing_dfa.start_state
+            curr_token = []
+        else:
+            raise LexicalError(f'LexicalError: Unexpected character "{repr(transition_char)}" at position {file_pos}')
+
+    while True:
+        transition_char = input_stream.read(1)
+        if transition_char:
+            file_pos += 1
+            if transition_char.isspace():
+                continue
+        elif file_pos - last_accepting_file_pos == 1:
+            # at EOF and fully tokenized
+            break
+        else:
+            resolve_transition_error()
+
+        if transition_char in curr_state.transitions:
+            curr_state = curr_state.transitions[transition_char]
+            curr_token.append(transition_char)
+            if curr_state.accepting:
+                last_accepting_state = curr_state
+                last_accepting_file_pos = file_pos
+        else:
+            resolve_transition_error()
+
+    return tokens

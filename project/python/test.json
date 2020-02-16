@@ -1,0 +1,30 @@
+{
+	"name": "go",
+	"displayName": "displayName",
+	"description": "description",
+	"version": "100",
+	"publisher": "vscode",
+	"license": "MIT",
+	"engines": { "vscode": "a" },
+	"scripts": {
+		"updategrammar": "asdfkjlsadf"
+	},
+	"contributes": {
+		"languages": [{
+			"id": "go",
+			"extensions": [ "go" ],
+			"aliases": [ "Go" ],
+			"configuration": "languageconfigurationjson"
+		}],
+		"grammars": [{
+			"language": "go",
+			"scopeName": "sourcego",
+			"path": "syntaxesgotmLanguagejson"
+		}],
+		"configurationDefaults": {
+			"go": {
+				"editorinsertSpaces": false
+			}
+		}
+	}
+}

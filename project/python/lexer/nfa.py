@@ -63,19 +63,18 @@ class Atom(NFA):
 class Epsilon(NFA):
 
     def __init__(self):
-        super().__init__(start_state=NFAState(), end_state=NFAState(accepting=True))
-        self.start_state.add_transition(
-            transition_char='', target_state=self.end_state)
-
+        start_state = end_state = NFAState(accepting=True)
+        super().__init__(start_state=start_state, end_state=end_state, alphabet=frozenset(), states=[start_state])
 
 class Union(NFA):
 
-    def __init__(self, *operands):
+    def __init__(self, *operands, close=True):
 
         if len(operands) < 2:
             raise Exception('Union must be passed >= 2 operands')
 
         operands = [deepcopy(operand) for operand in operands]
+
         collective_alphabet = frozenset().union(*[operand.alphabet for operand in operands])
 
         start_state = NFAState()
@@ -87,8 +86,9 @@ class Union(NFA):
 
         for operand in operands:
             start_state.add_transition(transition_char='', target_state=operand.start_state)
-            operand.end_state.add_transition(transition_char='', target_state=end_state)
-            operand.end_state.accepting = False
+            if close:
+                operand.end_state.add_transition(transition_char='', target_state=end_state)
+                operand.end_state.accepting = False
 
 
 class Concat(NFA):
