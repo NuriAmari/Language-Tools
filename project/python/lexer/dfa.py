@@ -133,7 +133,10 @@ def tokenize(input_stream, tokenizing_dfa):
         if last_accepting_state:
             input_stream.seek(last_accepting_file_pos)
             file_pos = last_accepting_file_pos
-            tokens.append(last_accepting_state.resolve_token(''.join(curr_token)))
+            try:
+                tokens.append(last_accepting_state.resolve_token(''.join(curr_token)))
+            except LexicalError:
+                raise LexicalError(f'LexicalError: Last accepting state at {last_accepting_file_pos} has no tokens')
             last_accepting_state = None
             curr_state = tokenizing_dfa.start_state
             curr_token = []

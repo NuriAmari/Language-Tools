@@ -1,4 +1,4 @@
-from lexer.tokens.symbols import DIGITS, NON_ZERO_DIGITS, ALPHABET, UPPERCASE_ALPHABET
+from lexer.tokens.symbols import DIGITS, NON_ZERO_DIGITS, ALPHABET, UPPERCASE_ALPHABET, ASCII
 from lexer.nfa import Atom, Concat, Epsilon, KleeneStar, Union
 from lexer.dfa import DFA
 from lexer.token import Token
@@ -54,7 +54,7 @@ _hex_digit = Union(Atom('A'),
                    Union(*NON_ZERO_DIGITS))
 
 # Strings
-STRING = Concat(Atom('"'), KleeneStar(Union(*DIGITS, *ALPHABET, *UPPERCASE_ALPHABET)), Atom('"'))
+STRING = Concat(Atom('"'), Union(Epsilon(), KleeneStar(Union(*[value for key, value in ASCII.items() if key != '"']))), Atom('"'))
 STRING.end_state.tokens.add(Token(name='STRING', priority=1))
 
 # Booleans

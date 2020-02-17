@@ -1,3 +1,5 @@
+import string
+
 from lexer.nfa import Atom, Concat, KleeneStar, Union
 
 from lexer.dfa import DFA
@@ -16,59 +18,9 @@ NINE = Atom('9')
 DIGITS = [ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
 NON_ZERO_DIGITS = [ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE]
 
-_a = Atom('a')
-_b = Atom('b')
-_c = Atom('c')
-_d = Atom('d')
-_e = Atom('e')
-_f = Atom('f')
-_g = Atom('g')
-_h = Atom('h')
-_i = Atom('i')
-_j = Atom('j')
-_k = Atom('k')
-_l = Atom('l')
-_m = Atom('m')
-_n = Atom('n')
-_o = Atom('o')
-_p = Atom('p')
-_q = Atom('q')
-_r = Atom('r')
-_s = Atom('s')
-_t = Atom('t')
-_u = Atom('u')
-_v = Atom('v')
-_w = Atom('w')
-_x = Atom('x')
-_y = Atom('y')
-_z = Atom('z')
+ALPHABET = [ Atom(letter) for letter in string.ascii_lowercase ]
+UPPERCASE_ALPHABET = [ Atom(letter) for letter in string.ascii_uppercase ]
 
-_A = Atom('A')
-_B = Atom('B')
-_C = Atom('C')
-_D = Atom('D')
-_E = Atom('E')
-_F = Atom('F')
-_G = Atom('G')
-_H = Atom('H')
-_I = Atom('I')
-_J = Atom('J')
-_K = Atom('K')
-_L = Atom('L')
-_M = Atom('M')
-_N = Atom('N')
-_O = Atom('O')
-_P = Atom('P')
-_Q = Atom('Q')
-_R = Atom('R')
-_S = Atom('S')
-_T = Atom('T')
-_U = Atom('U')
-_V = Atom('V')
-_W = Atom('W')
-_X = Atom('X')
-_Y = Atom('Y')
-_Z = Atom('Z')
-
-ALPHABET = [_a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, ]
-UPPERCASE_ALPHABET = [_A, _B, _C, _D, _E, _F, _G, _H, _I, _J, _K, _L, _M, _N, _O, _P, _Q, _R, _S, _T, _U, _V, _W, _X, _Y, _Z, ]
+ASCII = dict()
+for i in range(128):
+    ASCII[chr(i)] = Atom(chr(i))
