@@ -8,14 +8,13 @@ class NumberTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.number = DFA(LexerConfig.NUMBER)
-        cls.number.visualize()
         cls.json_grammar = ParserConfig.JSON_GRAMMAR
 
     def test__match__HappyPath__SuccessfulMatch(self):
 
         self.assertTrue(self.__class__.number.match('0'))
         self.assertTrue(self.__class__.number.match('1'))
-        self.assertTrue(self.__class__.number.match('2'))
+        self.assertTrue(self.__class__.number.match('-2'))
         self.assertTrue(self.__class__.number.match('3'))
         self.assertTrue(self.__class__.number.match('5'))
         self.assertTrue(self.__class__.number.match('123474938274981'))

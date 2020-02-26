@@ -36,7 +36,7 @@ class LexerConfig:
     _sign = Union(Epsilon(), _minus, _plus)
 
     _unsigned_integer = Union(Union(*DIGITS), Concat(Union(*NON_ZERO_DIGITS), KleeneStar(Union(*DIGITS))))
-    _integer = Concat(Union(_plus, Epsilon()), _unsigned_integer)
+    _integer = Concat(Union(_minus, Epsilon()), _unsigned_integer)
 
     _digits = KleeneStar(Union(*DIGITS))
     _fraction = Union(Epsilon(), Concat(_period, _digits))

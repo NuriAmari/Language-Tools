@@ -151,7 +151,8 @@ def tokenize(input_stream, tokenizing_dfa):
             if transition_char.isspace():
                 continue
         elif file_pos - last_accepting_file_pos == 1:
-            # at EOF and fully tokenized
+            # at EOF
+            resolve_transition_error()
             break
         else:
             resolve_transition_error()
