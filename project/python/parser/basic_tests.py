@@ -4,6 +4,7 @@ from parser.cfg import CFG, ProductionRule, NonTerminal, Terminal, Epsilon
 
 ASCII = [chr(i) for i in range(128)]
 
+
 class FirstFollowNullableTests(unittest.TestCase):
 
     @classmethod
@@ -25,10 +26,7 @@ class FirstFollowNullableTests(unittest.TestCase):
             ProductionRule(cls.C, [cls.e]),
         ]
 
-        cls.cfg = CFG(production_rules=cls.rules,
-                      alphabet=ASCII,
-                      non_terminals={cls.A, cls.B, cls.C},
-                      terminals={cls.a, cls.b, cls.c, cls.e})
+        cls.cfg = CFG(production_rules=cls.rules, alphabet=ASCII, start_symbol=cls.A)
 
     def test___is_nullable__HappyPath__CorrectResult(self):
         self.assertTrue(self.__class__.cfg._is_nullable(self.__class__.A))
@@ -37,7 +35,6 @@ class FirstFollowNullableTests(unittest.TestCase):
         self.assertFalse(self.__class__.cfg._is_nullable(self.__class__.a))
         self.assertFalse(self.__class__.cfg._is_nullable(self.__class__.b))
         self.assertFalse(self.__class__.cfg._is_nullable(self.__class__.c))
-
 
     def test___find_first__HappyPath__CorrectSetReturned(self):
         self.assertCountEqual({'a'}, self.__class__.cfg._find_first(self.__class__.a))
@@ -48,7 +45,6 @@ class FirstFollowNullableTests(unittest.TestCase):
         self.assertCountEqual({'c'}, self.__class__.cfg._find_first(self.__class__.B))
         self.assertCountEqual({}, self.__class__.cfg._find_first(self.__class__.C))
 
-
     def test__find_follow__HappyPath__CorrectSetReturned(self):
         self.assertCountEqual({'a', 'b', 'c'}, self.__class__.cfg._find_follow(self.__class__.A))
         self.assertCountEqual({}, self.__class__.cfg._find_follow(self.__class__.a))
@@ -56,7 +52,6 @@ class FirstFollowNullableTests(unittest.TestCase):
         self.assertCountEqual({}, self.__class__.cfg._find_follow(self.__class__.c))
         self.assertCountEqual({'b'}, self.__class__.cfg._find_follow(self.__class__.B))
         self.assertCountEqual({'b'}, self.__class__.cfg._find_follow(self.__class__.C))
-
 
     def test___generate_parse_table__HappyPath__CorrectParseTable(self):
         expected_parse_table = {
@@ -76,8 +71,10 @@ class FirstFollowNullableTests(unittest.TestCase):
     def test__is_grammar_LL1__HappyPath__CorrectResponse(self):
         self.assertFalse(self.__class__.cfg.is_grammar_LL1())
 
+
 class LL1ParseTests(unittest.TestCase):
     pass
+
 
 if __name__ == '__main__':
     unittest.main()

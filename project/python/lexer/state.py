@@ -38,6 +38,7 @@ class DFAState:
         return '\n'.join(lines)
 
     def resolve_token(self, content):
+
         # TODO: Store tokens in priority_queue in the first place
         curr_selected_token = None
         curr_priority = float('inf')

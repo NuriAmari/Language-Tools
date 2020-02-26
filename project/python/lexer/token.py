@@ -1,6 +1,6 @@
 class Token:
 
-    def __init__(self, name, priority):
+    def __init__(self, name, priority=1):
         self.name = name
         self.priority = priority
         self.content = None

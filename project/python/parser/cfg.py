@@ -1,13 +1,18 @@
 from abc import ABC
 from collections import defaultdict
 
+from parser.exceptions import ParsingException
+from lexer.token import Token
+
 class CFG:
 
-    def __init__(self, production_rules, alphabet, non_terminals, terminals):
+    def __init__(self, production_rules, alphabet, start_symbol):
+
+        self.start_prime = NonTerminal(name='S-Prime')
+        self.start_symbol = start_symbol
         self.production_rules = production_rules
+        self.production_rules.append(ProductionRule(self.start_prime, [BOF(), self.start_symbol, EOF()]))
         self.alphabet = alphabet
-        self.non_terminals = non_terminals
-        self.terminals = terminals
         self._generate_parse_table()
 
     def _is_nullable(self, sequence, visited=None):
@@ -132,17 +137,53 @@ class CFG:
     def is_grammar_LL1(self):
         for cell in self.parse_table.values():
             if len(cell) > 1:
+                print(cell)
                 return False
         return True
 
-    def parse(self, tokens):
-        pass
+    def print_parse_table(self):
+        for key, value in self.parse_table.items():
+            print(f'{key} : {value}')
+
+    def LL1_parse(self, tokens):
+        if self.is_grammar_LL1():
+            stack = [self.start_prime]
+            tokens = [Token(name='BOF')] + tokens + [Token(name='EOF')]
+            token_iterator = iter(tokens)
+            curr_token = next(token_iterator)
+            while stack:
+                top = stack.pop()
+                while isinstance(top, Epsilon):
+                    top = stack.pop()
+                if isinstance(top, NonTerminal):
+                    correct_rule = self.parse_table[(top, curr_token.name)]
+                    # print(correct_rule)
+                    if len(correct_rule) < 1:
+                        # print('stack', stack)
+                        raise ParsingException(f'ParsingException: No matching rule starting at {top}, reading {curr_token.name} found')
+
+                    for rule in correct_rule:
+                        # this will only run once
+                        stack += list(reversed(rule.rhs))
+                elif isinstance(top, Terminal):
+                    if top.name == curr_token.name:
+                        print(f'matched {top.name}')
+                        curr_token = next(token_iterator)
+                    else:
+                        # TODO: Improve this error message
+                        raise ParsingException(f'Failed to match token: {curr_token}, top: {top}')
+        else:
+            raise ParsingException('Grammar must be LL1 in order to LL1 parse')
+
 
 class ProductionRule:
 
     def __init__(self, lhs, rhs):
         self.lhs = lhs
         self.rhs = rhs
+
+    def __repr__(self):
+        return f'{self.lhs} -> {self.rhs}'
 
 class Symbol(ABC):
 
@@ -162,21 +203,25 @@ class NonTerminal(Symbol):
 
 class Terminal(Symbol):
 
-    def __init__(self, name, first):
-        first = { first } if first is not None else first
+    def __init__(self, name, first=None):
+        first = first or { name }
         super(Terminal, self).__init__(name=name, first=first, follow=set(), nullable=False)
         self.is_epsilon = False
 
 class Epsilon(Terminal):
 
     def __init__(self):
-        super().__init__(name='Epsilon', first=None)
+        super(Epsilon, self).__init__(name='Epsilon', first=None)
         self.is_epsilon = True
         self.follow = set()
         self.nullable = True
 
 class EOF(Terminal):
-    pass
+
+    def __init__(self):
+        super(EOF, self).__init__(name='EOF')
 
 class BOF(Terminal):
-    pass
+
+    def __init__(self):
+        super(BOF, self).__init__(name='BOF')
