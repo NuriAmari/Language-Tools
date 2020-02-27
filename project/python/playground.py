@@ -1,15 +1,11 @@
 from lexer.nfa import Atom, Concat, Union, KleeneStar, Epsilon
 from lexer.dfa import DFA
+from json.json import LexerConfig
 
-a = Atom('a')
-b = Atom('b')
-c = Atom('c')
-d = Atom('d')
-e = Atom('e')
+number = DFA(LexerConfig.NUMBER)
 
-ab = Union(a,b)
-ab.visualize()
-ab_star = KleeneStar(ab)
-AB_STAR = DFA(ab_star)
-ab_star.visualize()
-AB_STAR.visualize()
+for state in number.states:
+    if state.accepting:
+        print('A')
+        for token in state.tokens:
+            print(token)

@@ -151,6 +151,7 @@ class CFG:
             tokens = [Token(name='BOF')] + tokens + [Token(name='EOF')]
             token_iterator = iter(tokens)
             curr_token = next(token_iterator)
+            tokens_exhausted = False
             while stack:
                 top = stack.pop()
                 while isinstance(top, Epsilon):
@@ -168,10 +169,19 @@ class CFG:
                 elif isinstance(top, Terminal):
                     if top.name == curr_token.name:
                         print(f'matched {top.name}')
-                        curr_token = next(token_iterator)
+                        try:
+                            curr_token = next(token_iterator)
+                        except StopIteration:
+                            tokens_exhausted = True
+                            break
                     else:
                         # TODO: Improve this error message
                         raise ParsingException(f'Failed to match token: {curr_token}, top: {top}')
+
+            if tokens_exhausted is False:
+                raise ParsingException(f'ParsingException: Unexpected token: {curr_token}')
+            elif len(stack) > 0:
+                raise ParsingException(f'ParsingException: Expected more tokens')
         else:
             raise ParsingException('Grammar must be LL1 in order to LL1 parse')
 
