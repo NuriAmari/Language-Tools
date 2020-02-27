@@ -112,6 +112,7 @@ class Concat(NFA):
 
         for i in range(len(operands) - 1):
             bridge_state = NFAState()
+            self.states.append(bridge_state)
             operands[i].end_state.add_transition('', bridge_state)
             operands[i].end_state.accepting = False
             bridge_state.add_transition('', operands[i+1].start_state)
@@ -125,14 +126,12 @@ class KleeneStar(NFA):
 
         operand = deepcopy(operand)
 
-        start_state = NFAState(accepting=True)
-        end_state = NFAState()
+        start_state = end_state = NFAState(accepting=True)
 
         states = [start_state] + operand.states + [end_state]
 
         super().__init__(start_state=start_state, end_state=end_state, alphabet=operand.alphabet, states=states)
 
         start_state.add_transition(transition_char='', target_state=operand.start_state)
-        end_state.add_transition(transition_char='', target_state=start_state)
         operand.end_state.add_transition(transition_char='', target_state=end_state)
         operand.end_state.accepting = False

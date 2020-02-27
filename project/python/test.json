@@ -21,7 +21,7 @@
                     "jspFileTemplate": "articleTemplate.jsp",
                     "cachePackageTagsTrack": 200e5,
                     "cachePackageTagsStore": 200,
-                    "cachePackageTagsRefresh": 60,
+                    "cachePackageTagsRefresh": 6,
                     "cacheTemplatesTrack": 100,
                     "cacheTemplatesStore": 50,
                     "cacheTemplatesRefresh": 15,
