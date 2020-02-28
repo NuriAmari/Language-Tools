@@ -108,12 +108,12 @@ class DFA:
                 neighbour_id = state_ids[id(neighbour)]
                 print(f'{state_id}{state_tag(state)}-{transition_char}->{neighbour_id}{state_tag(neighbour)}')
 
+
 def tokenize(input_stream, tokenizing_dfa):
     """
     Performs simplified maximal munch on the input stream
         <input_stream> The text stream providing the text to be tokenized
         <tokenizing_dfa> The dfa defining tokens
-        <priority_mapping> A map from token to priority, used to resolve tokenization ambiguities
     """
     file_pos = 0
     last_accepting_file_pos = -1

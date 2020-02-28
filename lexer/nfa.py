@@ -13,17 +13,9 @@ class NFA(ABC):
         self.alphabet = alphabet
         self.states = states
 
-    def recognize(self, input_string):
-        pass
-
-    def to_DFA(self):
-        pass
-
     def visualize(self):
         state_ids = dict()
         num_states = 0
-
-        print('^---^')
 
         for state in self.states:
             num_states += 1
@@ -65,6 +57,7 @@ class Epsilon(NFA):
     def __init__(self):
         start_state = end_state = NFAState(accepting=True)
         super().__init__(start_state=start_state, end_state=end_state, alphabet=frozenset(), states=[start_state])
+
 
 class Union(NFA):
 
@@ -119,6 +112,7 @@ class Concat(NFA):
 
         operands[-1].end_state.accepting = False
         operands[-1].end_state.add_transition(transition_char='', target_state=end_state)
+
 
 class KleeneStar(NFA):
 
