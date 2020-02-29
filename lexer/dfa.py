@@ -1,4 +1,5 @@
 from collections import defaultdict, deque
+from copy import deepcopy
 
 from lexer.state import DFAState
 from lexer.exceptions import LexicalError
@@ -13,7 +14,7 @@ class DFA:
 
         # find initial epsilon closure to start building from
         start_state = set()
-        DFA.find_epsilon_closure(nfa_to_convert.start_state, start_state)
+        DFA.find_epsilon_closure({nfa_to_convert.start_state}, start_state)
 
         self.start_state = DFAState(accepting=nfa_to_convert.start_state.accepting)
         dfa_states[frozenset(start_state)] = self.start_state
@@ -21,12 +22,20 @@ class DFA:
         q = deque([start_state])
         while q:
             curr_dfa_state = frozenset(q.pop())
+            epsilon_closure = set(curr_dfa_state)
+            DFA.find_epsilon_closure(curr_dfa_state, epsilon_closure)
 
             for transition_char in nfa_to_convert.alphabet:
                 transition_char_closure = set()
                 is_accepting_state = False
-                for nfa_state in curr_dfa_state:
-                    is_accepting_state = is_accepting_state or DFA.find_closure(nfa_state, transition_char_closure, transition_char, False)
+
+                tokens = set()
+
+                for nfa_state in epsilon_closure:
+                    for target_state in nfa_state.transitions[transition_char]:
+                        transition_char_closure.add(target_state)
+                        tokens = tokens.union(target_state.tokens)
+                        is_accepting_state = is_accepting_state or target_state.accepting
 
                 transition_char_closure = frozenset(transition_char_closure)
 
@@ -35,7 +44,7 @@ class DFA:
                     if transition_char_closure not in dfa_states:
                         q.appendleft(transition_char_closure)
                         dfa_states[transition_char_closure] = DFAState(accepting=is_accepting_state)
-                        dfa_states[transition_char_closure].tokens = set().union(*[state.tokens for state in transition_char_closure])
+                        dfa_states[transition_char_closure].tokens = tokens
 
                     dfa_states[curr_dfa_state].set_transition(transition_char, dfa_states[transition_char_closure])
 
@@ -48,28 +57,30 @@ class DFA:
 
         return '\n'.join(state_strings)
 
+    # @staticmethod
+    # def find_closure(start_state, states_reached, symbol_to_process, symbol_used):
+    #     accepting_found = False
+    #     for epsilon_neighbour in start_state.transitions['']:
+    #         if symbol_used:
+    #             states_reached.add(epsilon_neighbour)
+    #             accepting_found = accepting_found or epsilon_neighbour.accepting
+    #         accepting_found = DFA.find_closure(epsilon_neighbour, states_reached, symbol_to_process, symbol_used) or accepting_found
+
+    #     if not symbol_used:
+    #         for neighbour in start_state.transitions[symbol_to_process]:
+    #             states_reached.add(neighbour)
+    #             accepting_found = accepting_found or neighbour.accepting
+    #             accepting_found = DFA.find_closure(neighbour, states_reached, symbol_to_process, True) or accepting_found
+
+    #     return accepting_found
+
     @staticmethod
-    def find_closure(start_state, states_reached, symbol_to_process, symbol_used):
-        accepting_found = False
-        for epsilon_neighbour in start_state.transitions['']:
-            if symbol_used:
-                states_reached.add(epsilon_neighbour)
-                accepting_found = accepting_found or epsilon_neighbour.accepting
-            accepting_found = DFA.find_closure(epsilon_neighbour, states_reached, symbol_to_process, symbol_used) or accepting_found
-
-        if not symbol_used:
-            for neighbour in start_state.transitions[symbol_to_process]:
-                states_reached.add(neighbour)
-                accepting_found = accepting_found or neighbour.accepting
-                accepting_found = DFA.find_closure(neighbour, states_reached, symbol_to_process, True) or accepting_found
-
-        return accepting_found
-
-    @staticmethod
-    def find_epsilon_closure(start_state, states_reached):
-        states_reached.add(start_state)
-        for epsilon_neighbour in start_state.transitions['']:
-            DFA.find_epsilon_closure(epsilon_neighbour, states_reached)
+    def find_epsilon_closure(start_states, states_reached):
+        for state in start_states:
+            states_reached.add(state)
+            for epsilon_neighbour in state.transitions['']:
+                if epsilon_neighbour not in states_reached:
+                    DFA.find_epsilon_closure({ epsilon_neighbour }, states_reached)
 
     def match(self, string_to_match):
         curr_state = self.start_state
@@ -135,7 +146,7 @@ def tokenize(input_stream, tokenizing_dfa):
             file_pos = last_accepting_file_pos
             token_content = ''.join(curr_token)
             try:
-                tokens.append(last_accepting_state.resolve_token(token_content))
+                tokens.append(deepcopy(last_accepting_state.resolve_token(token_content)))
             except LexicalError:
                 raise LexicalError(f'LexicalError: Last accepting state at {last_accepting_file_pos} has no tokens')
             last_accepting_state = None

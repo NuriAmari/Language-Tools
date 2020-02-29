@@ -5,10 +5,11 @@ from lexer.exceptions import LexicalError
 
 class NFAState:
 
-    def __init__(self, accepting=False, tokens=None):
+    def __init__(self, accepting=False, tokens=None, tag=None):
         self.transitions = defaultdict(set)
         self.accepting = accepting
         self.tokens = accepting and tokens or set()
+        self.tag = tag
 
     def add_transition(self, transition_char, target_state):
         self.transitions[transition_char].add(target_state)

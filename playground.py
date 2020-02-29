@@ -1,17 +1,23 @@
 from lexer.nfa import Atom, Concat, Union, KleeneStar, Epsilon
 from lexer.dfa import DFA
-from lexer.tokens.symbols import DIGITS, NON_ZERO_DIGITS
-from json.json import LexerConfig
 
 a = Atom('a')
 b = Atom('b')
-# number = KleeneStar(Union(*DIGITS))
-number = Concat(Union(a,b), KleeneStar(Union(a,b)))
-# number.visualize()
-# number = Union(*NON_ZERO_DIGITS)
+c = Atom('c')
 
-for state in number.states:
-    if state.accepting:
-        print('A')
-        # for token in state.tokens:
-        #     print(token)
+inner = Union(Union(a,b,c), Concat(Union(a,b), KleeneStar(Union(a,b,c))))
+test = DFA(inner)
+
+for i in range(10):
+    if not test.match('aaa'):
+        print('fail')
+        test.visualize()
+        print('---')
+        inner.visualize()
+        break
+    else:
+        print('proper')
+        test.visualize()
+        print('---')
+        inner.visualize()
+        break

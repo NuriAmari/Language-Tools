@@ -158,9 +158,7 @@ class CFG:
                     top = stack.pop()
                 if isinstance(top, NonTerminal):
                     correct_rule = self.parse_table[(top, curr_token.name)]
-                    # print(correct_rule)
                     if len(correct_rule) < 1:
-                        # print('stack', stack)
                         raise ParsingException(f'ParsingException: No matching rule starting at {top}, reading {curr_token.name} found')
 
                     for rule in correct_rule:
@@ -168,7 +166,7 @@ class CFG:
                         stack += list(reversed(rule.rhs))
                 elif isinstance(top, Terminal):
                     if top.name == curr_token.name:
-                        print(f'matched {top.name}')
+                        print(f'matched {top.name}', curr_token.content)
                         try:
                             curr_token = next(token_iterator)
                         except StopIteration:

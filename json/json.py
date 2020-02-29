@@ -1,4 +1,4 @@
-from lexer.tokens.symbols import DIGITS, NON_ZERO_DIGITS, ALPHABET, UPPERCASE_ALPHABET, ASCII
+from lexer.basic_symbols import DIGITS, NON_ZERO_DIGITS, ALPHABET, UPPERCASE_ALPHABET, ASCII
 from lexer.nfa import Atom, Concat, Epsilon, KleeneStar, Union
 from lexer.dfa import DFA
 from lexer.token import Token

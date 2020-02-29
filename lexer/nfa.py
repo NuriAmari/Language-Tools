@@ -30,6 +30,8 @@ class NFA(ABC):
                 state_tag += 'A'
             if state == self.start_state:
                 state_tag += 'S'
+            if state.tag is not None:
+                state_tag += state.tag
             return state_tag
 
         for state in self.states:
@@ -104,7 +106,7 @@ class Concat(NFA):
         start_state.add_transition(transition_char='', target_state=operands[0].start_state)
 
         for i in range(len(operands) - 1):
-            bridge_state = NFAState()
+            bridge_state = NFAState(tag='B')
             self.states.append(bridge_state)
             operands[i].end_state.add_transition('', bridge_state)
             operands[i].end_state.accepting = False
@@ -120,9 +122,9 @@ class KleeneStar(NFA):
 
         operand = deepcopy(operand)
 
-        start_state = end_state = NFAState(accepting=True)
+        start_state = end_state = NFAState(accepting=True, tag='KS')
 
-        states = [start_state] + operand.states + [end_state]
+        states = [start_state] + operand.states
 
         super().__init__(start_state=start_state, end_state=end_state, alphabet=operand.alphabet, states=states)
 
