@@ -166,7 +166,6 @@ class CFG:
                         stack += list(reversed(rule.rhs))
                 elif isinstance(top, Terminal):
                     if top.name == curr_token.name:
-                        print(f'matched {top.name}', curr_token.content)
                         try:
                             curr_token = next(token_iterator)
                         except StopIteration:

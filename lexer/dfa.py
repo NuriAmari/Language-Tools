@@ -59,23 +59,6 @@ class DFA:
 
         return '\n'.join(state_strings)
 
-    # @staticmethod
-    # def find_closure(start_state, states_reached, symbol_to_process, symbol_used):
-    #     accepting_found = False
-    #     for epsilon_neighbour in start_state.transitions['']:
-    #         if symbol_used:
-    #             states_reached.add(epsilon_neighbour)
-    #             accepting_found = accepting_found or epsilon_neighbour.accepting
-    #         accepting_found = DFA.find_closure(epsilon_neighbour, states_reached, symbol_to_process, symbol_used) or accepting_found
-
-    #     if not symbol_used:
-    #         for neighbour in start_state.transitions[symbol_to_process]:
-    #             states_reached.add(neighbour)
-    #             accepting_found = accepting_found or neighbour.accepting
-    #             accepting_found = DFA.find_closure(neighbour, states_reached, symbol_to_process, True) or accepting_found
-
-    #     return accepting_found
-
     @staticmethod
     def find_epsilon_closure(states):
         states_reached = set(states)
