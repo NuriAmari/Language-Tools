@@ -1,30 +1,30 @@
+from typing import Dict, FrozenSet, Set, NewType
 from collections import defaultdict, deque
 from copy import deepcopy
 
-from lexer.state import DFAState
+from lexer.state import DFAState, NFAState
 from lexer.exceptions import LexicalError
-
 
 class DFA:
 
     def __init__(self, nfa_to_convert):
 
         # will map from a collection of nfa_states to a dfa_state
-        dfa_states = dict()
+        dfa_states: Dict[FrozenSet[NFAState], DFAState] = dict()
 
         # find initial epsilon closure to start building from
-        start_state = DFA.find_epsilon_closure({nfa_to_convert.start_state})
+        start_state: NFAState = DFA.find_epsilon_closure({nfa_to_convert.start_state})
 
-        self.start_state = DFAState(accepting=nfa_to_convert.start_state.accepting)
+        self.start_state: DFAState = DFAState(accepting=nfa_to_convert.start_state.accepting)
         dfa_states[frozenset(start_state)] = self.start_state
 
         q = deque([start_state])
         while q:
-            curr_dfa_state = frozenset(q.pop())
-            epsilon_closure = DFA.find_epsilon_closure(curr_dfa_state)
+            curr_dfa_state: FrozenSet[NFAState] = frozenset(q.pop())
+            epsilon_closure: Set[NFAState] = DFA.find_epsilon_closure(curr_dfa_state)
 
             for transition_char in nfa_to_convert.alphabet:
-                transition_char_closure = set()
+                transition_char_closure: Set[NFAState] = set()
 
                 for nfa_state in epsilon_closure:
                     for target_state in nfa_state.transitions[transition_char]:
@@ -52,7 +52,7 @@ class DFA:
 
         self.states = dfa_states.values()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         state_strings = []
         for state in self.states:
             state_strings.append(str(state))
@@ -60,21 +60,20 @@ class DFA:
         return '\n'.join(state_strings)
 
     @staticmethod
-    def find_epsilon_closure(states):
-        states_reached = set(states)
+    def find_epsilon_closure(states: Set[NFAState]) -> Set[NFAState]:
+        states_reached: Set[NFAState] = set(states)
 
-        def helper(start_states, states_reached):
+        def helper(start_states: Set[NFAState], states_reached: Set[NFAState]):
             for state in start_states:
                 states_reached.add(state)
                 for epsilon_neighbour in state.transitions['']:
                     if epsilon_neighbour not in states_reached:
-                        helper({ epsilon_neighbour }, states_reached)
+                        helper({epsilon_neighbour}, states_reached)
 
         helper(states, states_reached)
         return states_reached
 
-
-    def match(self, string_to_match):
+    def match(self, string_to_match: str) -> bool:
         curr_state = self.start_state
         for curr_char in string_to_match:
             if curr_char in curr_state.transitions:
@@ -95,7 +94,7 @@ class DFA:
 
         print('----')
 
-        def state_tag(state):
+        def state_tag(state: DFAState) -> str:
             state_tag = ''
             if state.accepting:
                 state_tag += 'A'
@@ -104,7 +103,6 @@ class DFA:
             return state_tag
 
         for state in self.states:
-            num_states
             state_id = state_ids[id(state)]
             for transition_char in state.transitions.keys():
                 neighbour = state.transitions[transition_char]

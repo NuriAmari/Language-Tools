@@ -6,8 +6,6 @@ from lexer.token import Token
 from parser.cfg import CFG, Terminal, NonTerminal, ProductionRule
 from parser.cfg import Epsilon as EpsilonGrammarSymbol
 
-from AST.AST import AST
-
 class LexerConfig:
 
     #################################################################################
@@ -141,7 +139,3 @@ class ParserConfig:
     ]
 
     JSON_GRAMMAR = CFG(production_rules=PRODUCTION_RULES, alphabet=[chr(i) for i in range(128)], start_symbol=JSON)
-
-
-class JSONTree(AST):
-    pass
