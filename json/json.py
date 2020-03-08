@@ -2,6 +2,7 @@ from lexer.basic_symbols import DIGITS, NON_ZERO_DIGITS, ALPHABET, UPPERCASE_ALP
 from lexer.nfa import Atom, Concat, Epsilon, KleeneStar, Union
 from lexer.dfa import DFA
 from lexer.token import Token
+from ast.ast import ASTNode
 
 from parser.cfg import CFG, Terminal, NonTerminal, ProductionRule
 from parser.cfg import Epsilon as EpsilonGrammarSymbol
@@ -116,26 +117,34 @@ class ParserConfig:
     # # PRODUCTION RULES
 
     PRODUCTION_RULES = [
-        ProductionRule(JSON, [VALUE]),
-        ProductionRule(VALUE, [OBJECT]),
-        ProductionRule(VALUE, [ARRAY]),
-        ProductionRule(VALUE, [string]),
-        ProductionRule(VALUE, [number]),
-        ProductionRule(VALUE, [true]),
-        ProductionRule(VALUE, [false]),
-        ProductionRule(VALUE, [null]),
-        ProductionRule(OBJECT, [left_curly, MEMBERS, right_curly]),
-        ProductionRule(MEMBERS, [EpsilonGrammarSymbol()]),
-        ProductionRule(MEMBERS, [MEMBER, ANOTHER_MEMBER]),
-        ProductionRule(ANOTHER_MEMBER, [comma, MEMBER, ANOTHER_MEMBER]),
-        ProductionRule(ANOTHER_MEMBER, [EpsilonGrammarSymbol()]),
-        ProductionRule(MEMBER, [string, colon, ELEMENT]),
-        ProductionRule(ARRAY, [left_square, ELEMENTS, right_square]),
-        ProductionRule(ELEMENTS, [EpsilonGrammarSymbol()]),
-        ProductionRule(ELEMENTS, [ELEMENT, ANOTHER_ELEMENT]),
-        ProductionRule(ELEMENT, [VALUE]),
-        ProductionRule(ANOTHER_ELEMENT, [comma, ELEMENT, ANOTHER_ELEMENT]),
-        ProductionRule(ANOTHER_ELEMENT, [EpsilonGrammarSymbol()]),
+        ProductionRule(JSON, [VALUE], name='SKIP'),
+        ProductionRule(VALUE, [OBJECT], name='SKIP'),
+        ProductionRule(VALUE, [ARRAY], name='SKIP'),
+        ProductionRule(VALUE, [string], name='SKIP'),
+        ProductionRule(VALUE, [number], name='SKIP'),
+        ProductionRule(VALUE, [true], name='SKIP'),
+        ProductionRule(VALUE, [false], name='SKIP'),
+        ProductionRule(VALUE, [null], name='SKIP'),
+        ProductionRule(OBJECT, [left_curly, MEMBERS, right_curly], name='OBJECT_CREATE'),
+        ProductionRule(MEMBERS, [EpsilonGrammarSymbol()], name='SKIP'),
+        ProductionRule(MEMBERS, [MEMBER, ANOTHER_MEMBER], name='SKIP'),
+        ProductionRule(ANOTHER_MEMBER, [comma, MEMBER, ANOTHER_MEMBER], name='SKIP'),
+        ProductionRule(ANOTHER_MEMBER, [EpsilonGrammarSymbol()], name='SKIP'),
+        ProductionRule(MEMBER, [string, colon, ELEMENT], name='ADD_FIELD'),
+        ProductionRule(ARRAY, [left_square, ELEMENTS, right_square], name='ARRAY_CREATE'),
+        ProductionRule(ELEMENTS, [EpsilonGrammarSymbol()], name='SKIP'),
+        ProductionRule(ELEMENTS, [ELEMENT, ANOTHER_ELEMENT], name='SKIP'),
+        ProductionRule(ELEMENT, [VALUE], name='SKIP'),
+        ProductionRule(ANOTHER_ELEMENT, [comma, ELEMENT, ANOTHER_ELEMENT], name='SKIP'),
+        ProductionRule(ANOTHER_ELEMENT, [EpsilonGrammarSymbol()], name='SKIP'),
     ]
 
     JSON_GRAMMAR = CFG(production_rules=PRODUCTION_RULES, alphabet=[chr(i) for i in range(128)], start_symbol=JSON)
+
+class JsonObject:
+
+    def __init__(self, ast: ASTNode):
+        self.content = self.__class__.ast_to_object(ast)
+
+    @staticmethod
+    def ast_to_object(ast: ASTNode) -> object:

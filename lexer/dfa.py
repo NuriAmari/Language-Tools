@@ -5,8 +5,8 @@ from copy import deepcopy
 from lexer.state import DFAState, NFAState
 from lexer.exceptions import LexicalError
 
-class DFA:
 
+class DFA:
     def __init__(self, nfa_to_convert):
 
         # will map from a collection of nfa_states to a dfa_state
@@ -15,7 +15,9 @@ class DFA:
         # find initial epsilon closure to start building from
         start_state: NFAState = DFA.find_epsilon_closure({nfa_to_convert.start_state})
 
-        self.start_state: DFAState = DFAState(accepting=nfa_to_convert.start_state.accepting)
+        self.start_state: DFAState = DFAState(
+            accepting=nfa_to_convert.start_state.accepting
+        )
         dfa_states[frozenset(start_state)] = self.start_state
 
         q = deque([start_state])
@@ -30,7 +32,9 @@ class DFA:
                     for target_state in nfa_state.transitions[transition_char]:
                         transition_char_closure.add(target_state)
 
-                transition_char_closure = DFA.find_epsilon_closure(transition_char_closure)
+                transition_char_closure = DFA.find_epsilon_closure(
+                    transition_char_closure
+                )
                 transition_char_closure = frozenset(transition_char_closure)
 
                 if len(transition_char_closure) > 0:
@@ -45,10 +49,14 @@ class DFA:
                             is_accepting = is_accepting or state.accepting
                             tokens = tokens.union(state.tokens)
 
-                        dfa_states[transition_char_closure] = DFAState(accepting=is_accepting)
+                        dfa_states[transition_char_closure] = DFAState(
+                            accepting=is_accepting
+                        )
                         dfa_states[transition_char_closure].tokens = tokens
 
-                    dfa_states[curr_dfa_state].set_transition(transition_char, dfa_states[transition_char_closure])
+                    dfa_states[curr_dfa_state].set_transition(
+                        transition_char, dfa_states[transition_char_closure]
+                    )
 
         self.states = dfa_states.values()
 
@@ -57,7 +65,7 @@ class DFA:
         for state in self.states:
             state_strings.append(str(state))
 
-        return '\n'.join(state_strings)
+        return "\n".join(state_strings)
 
     @staticmethod
     def find_epsilon_closure(states: Set[NFAState]) -> Set[NFAState]:
@@ -66,7 +74,7 @@ class DFA:
         def helper(start_states: Set[NFAState], states_reached: Set[NFAState]):
             for state in start_states:
                 states_reached.add(state)
-                for epsilon_neighbour in state.transitions['']:
+                for epsilon_neighbour in state.transitions[""]:
                     if epsilon_neighbour not in states_reached:
                         helper({epsilon_neighbour}, states_reached)
 
@@ -92,14 +100,14 @@ class DFA:
             print(num_states)
             state_ids[id(state)] = num_states
 
-        print('----')
+        print("----")
 
         def state_tag(state: DFAState) -> str:
-            state_tag = ''
+            state_tag = ""
             if state.accepting:
-                state_tag += 'A'
+                state_tag += "A"
             if state == self.start_state:
-                state_tag += 'S'
+                state_tag += "S"
             return state_tag
 
         for state in self.states:
@@ -107,7 +115,9 @@ class DFA:
             for transition_char in state.transitions.keys():
                 neighbour = state.transitions[transition_char]
                 neighbour_id = state_ids[id(neighbour)]
-                print(f'{state_id}{state_tag(state)}-{transition_char}->{neighbour_id}{state_tag(neighbour)}')
+                print(
+                    f"{state_id}{state_tag(state)}-{transition_char}->{neighbour_id}{state_tag(neighbour)}"
+                )
 
 
 def tokenize(input_stream, tokenizing_dfa):
@@ -134,16 +144,22 @@ def tokenize(input_stream, tokenizing_dfa):
         if last_accepting_state:
             input_stream.seek(last_accepting_file_pos)
             file_pos = last_accepting_file_pos
-            token_content = ''.join(curr_token)
+            token_content = "".join(curr_token)
             try:
-                tokens.append(deepcopy(last_accepting_state.resolve_token(token_content)))
+                tokens.append(
+                    deepcopy(last_accepting_state.resolve_token(token_content))
+                )
             except LexicalError:
-                raise LexicalError(f'LexicalError: Last accepting state at {last_accepting_file_pos} has no tokens')
+                raise LexicalError(
+                    f"LexicalError: Last accepting state at {last_accepting_file_pos} has no tokens"
+                )
             last_accepting_state = None
             curr_state = tokenizing_dfa.start_state
             curr_token = []
         else:
-            raise LexicalError(f'LexicalError: Unexpected character "{repr(transition_char)}" at position {file_pos}')
+            raise LexicalError(
+                f'LexicalError: Unexpected character "{repr(transition_char)}" at position {file_pos}'
+            )
 
     while True:
         transition_char = input_stream.read(1)
