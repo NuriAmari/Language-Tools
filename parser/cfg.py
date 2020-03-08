@@ -4,7 +4,7 @@ from typing import List, Iterable, Union, Set, Optional, Tuple, Dict, Callable
 
 from parser.exceptions import ParsingException
 from lexer.token import Token
-
+from ast.ast import ASTNode
 
 class Symbol(ABC):
 
@@ -55,9 +55,10 @@ class BOF(Terminal):
 
 class ProductionRule:
 
-    def __init__(self, lhs: NonTerminal, rhs: List[Symbol]):
+    def __init__(self, lhs: NonTerminal, rhs: List[Symbol], name: Optional[str] = None):
         self.lhs = lhs
         self.rhs = rhs
+        self.name = name
 
     def __repr__(self) -> str:
         return f'{self.lhs} -> {self.rhs}'
@@ -65,7 +66,7 @@ class ProductionRule:
 
 class CFG:
 
-    def __init__(self, production_rules: List[ProductionRule], alphabet: Iterable[str], start_symbol: NonTerminal):
+    def __init__(self, production_rules: List[ProductionRule], alphabet: Iterable[str], start_symbol: NonTerminal, match_hook=None, rule_hook=None):
 
         self.start_prime = NonTerminal(name='S-Prime')
         self.start_symbol = start_symbol
@@ -73,8 +74,8 @@ class CFG:
         self.production_rules.append(ProductionRule(self.start_prime, [BOF(), self.start_symbol, EOF()]))
         self.alphabet = alphabet
         self._generate_parse_table()
-        self.match_hook: Optional[Callable[[Terminal], None]] = None
-        self.rule_hook: Optional[Callable[[ProductionRule], None]] = None
+        self.match_hook: Optional[Callable[[Terminal], None]] = match_hook
+        self.rule_hook: Optional[Callable[[ProductionRule], None]] = rule_hook
 
     def _is_nullable(self, sequence: Union[Symbol, List[Symbol]], visited: Optional[Set[Symbol]] = None) -> bool:
 
@@ -203,7 +204,11 @@ class CFG:
         for key, value in self.parse_table.items():
             print(f'{key} : {value}')
 
-    def LL1_parse(self, tokens: List[Token]) -> None:
+    def LL1_parse(self, tokens: List[Token]) -> ASTNode:
+
+        root = ASTNode(name='Container')
+        ast_stack: List[Tuple[ASTNode, int]] = [(root, 1)]
+
         if self.is_grammar_LL1():
             stack: List[Symbol] = [self.start_prime]
             tokens = [Token(name='BOF')] + tokens + [Token(name='EOF')]
@@ -220,9 +225,16 @@ class CFG:
                         raise ParsingException(f'ParsingException: No matching rule starting at {top}, reading {curr_token.name} found')
                     for rule in correct_rule:
                         # this will only run once
+                        rule_node = ASTNode(name=rule.lhs.name)
+                        ast_stack[-1][0].children.append(rule_node)
+                        ast_stack.append((rule_node, len(rule.rhs)))
                         stack += list(reversed(rule.rhs))
                 elif isinstance(top, Terminal):
                     if top.name == curr_token.name:
+                        ast_stack[-1] = (ast_stack[-1][0], ast_stack[-1][1] - 1)
+                        while len(ast_stack) > 1 and ast_stack[-1][1] == 0:
+                            ast_stack.pop()
+                            ast_stack[-1] = (ast_stack[-1][0], ast_stack[-1][1] - 1)
                         try:
                             curr_token = next(token_iterator)
                         except StopIteration:
@@ -236,5 +248,6 @@ class CFG:
                 raise ParsingException(f'ParsingException: Unexpected token: {curr_token}')
             elif len(stack) > 0:
                 raise ParsingException(f'ParsingException: Expected more tokens')
+            return root.children[0]
         else:
             raise ParsingException('Grammar must be LL1 in order to LL1 parse')
