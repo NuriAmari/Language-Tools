@@ -255,6 +255,10 @@ class CFG:
                 top = stack.pop()
                 while isinstance(top, Epsilon):
                     top = stack.pop()
+                    ast_stack[-1] = (ast_stack[-1][0], ast_stack[-1][1] - 1)
+                    while len(ast_stack) > 1 and ast_stack[-1][1] == 0:
+                        ast_stack.pop()
+                        ast_stack[-1] = (ast_stack[-1][0], ast_stack[-1][1] - 1)
                 if isinstance(top, NonTerminal):
                     correct_rule = self.parse_table[(top, curr_token.name)]
                     if len(correct_rule) < 1:
@@ -269,6 +273,9 @@ class CFG:
                         stack += list(reversed(rule.rhs))
                 elif isinstance(top, Terminal):
                     if top.name == curr_token.name:
+                        ast_stack[-1][0].children.append(
+                            ASTNode(name=curr_token.name, lexme=curr_token.content)
+                        )
                         ast_stack[-1] = (ast_stack[-1][0], ast_stack[-1][1] - 1)
                         while len(ast_stack) > 1 and ast_stack[-1][1] == 0:
                             ast_stack.pop()
