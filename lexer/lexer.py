@@ -8,29 +8,39 @@ from lexer.state import DFAState
 from lexer.dfa import DFA
 from lexer.token import Token
 
-class LexerStreamReader:
 
+class LexerStreamReader:
     def __init__(self, stream: io.TextIOBase):
         self.stream = stream
         self.marks_stack: List[int] = []
-        self.pos = 0
-        self.line_start_positions: List[int] = []
+        self.line_start_positions: List[int] = [0]
 
     def next(self) -> Optional[str]:
-        self.stream.read(1)
+        next_char: str = self.stream.read(1)
+        while next_char.isspace():
+            if next_char == "\n":
+                self.line_start_positions.append(self.stream.tell())
+            next_char = self.stream.read(1)
+        return next_char
 
-    def mark(self):
+    def mark(self) -> None:
         self.marks_stack.append(self.stream.tell())
 
-    def pop_mark(self):
-        if len(marks) > 1:
-            self.marks.pop()
-            return self.marks[-1]
+    def pop_mark(self) -> None:
+        if len(self.marks_stack) > 1:
+            self.marks_stack.pop()
+            while self.line_start_positions[-1] > self.marks_stack[-1]:
+                self.line_start_positions.pop()
+            self.stream.seek(self.marks_stack[-1])
         else:
-            raise LexicalError('Pop called on mark stack with < 2 items')
+            raise LexicalError("Pop called on mark stack with < 2 items")
 
-    def curr_line(self):
-
+    def curr_line(self) -> str:
+        curr_pos = self.stream.tell()
+        self.stream.seek(self.line_start_positions[-1])
+        retval = self.stream.readline()
+        self.stream.seek(curr_pos)
+        return retval
 
 
 def tokenize(input_stream, tokenizing_dfa: DFA):
@@ -39,7 +49,7 @@ def tokenize(input_stream, tokenizing_dfa: DFA):
     """
     file_pos: int = 0
     last_accepting_file_pos: int = -1
-    last_accepting_state: DFAState = None
+    last_accepting_state: Optional[DFAState] = None
     curr_state: DFAState = tokenizing_dfa.start_state
     tokens: List[Token] = []
     curr_token: List[str] = []
