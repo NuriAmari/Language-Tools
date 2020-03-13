@@ -1,24 +1,48 @@
-from typing import List
+import io
+from typing import List, Optional
 from copy import deepcopy
 
 from lexer.exceptions import LexicalError
 
+from lexer.state import DFAState
 from lexer.dfa import DFA
 from lexer.token import Token
+
+class LexerStreamReader:
+
+    def __init__(self, stream: io.TextIOBase):
+        self.stream = stream
+        self.marks_stack: List[int] = []
+        self.pos = 0
+        self.line_start_positions: List[int] = []
+
+    def next(self) -> Optional[str]:
+        self.stream.read(1)
+
+    def mark(self):
+        self.marks_stack.append(self.stream.tell())
+
+    def pop_mark(self):
+        if len(marks) > 1:
+            self.marks.pop()
+            return self.marks[-1]
+        else:
+            raise LexicalError('Pop called on mark stack with < 2 items')
+
+    def curr_line(self):
+
 
 
 def tokenize(input_stream, tokenizing_dfa: DFA):
     """
     Performs simplified maximal munch on the input stream
-        <input_stream> The text stream providing the text to be tokenized
-        <tokenizing_dfa> The dfa defining tokens
     """
-    file_pos = 0
-    last_accepting_file_pos = -1
-    last_accepting_state = None
-    curr_state = tokenizing_dfa.start_state
+    file_pos: int = 0
+    last_accepting_file_pos: int = -1
+    last_accepting_state: DFAState = None
+    curr_state: DFAState = tokenizing_dfa.start_state
     tokens: List[Token] = []
-    curr_token = []
+    curr_token: List[str] = []
 
     def resolve_transition_error():
         nonlocal last_accepting_state
@@ -28,7 +52,7 @@ def tokenize(input_stream, tokenizing_dfa: DFA):
         nonlocal curr_state
         nonlocal curr_token
 
-        if last_accepting_state:
+        if last_accepting_state is not None:
             input_stream.seek(last_accepting_file_pos)
             file_pos = last_accepting_file_pos
             token_content = "".join(curr_token)
