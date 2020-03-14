@@ -1,7 +1,7 @@
 from collections import defaultdict
 from abc import ABC, abstractmethod
 
-from lexer.exceptions import LexicalError
+from lexer.exceptions import TokenResolutionError
 
 
 class NFAState:
@@ -46,17 +46,15 @@ class DFAState:
         curr_priority = float("inf")
 
         if len(self.tokens) == 0:
-            raise LexicalError(
-                f"LexicalError: State representing {content} has no tokens"
-            )
+            raise TokenResolutionError(f"State representing {content} has no tokens")
 
         for token in self.tokens:
             if token.priority < curr_priority:
                 curr_selected_token = token
                 curr_priority = token.priority
             elif token.priority == curr_priority:
-                raise LexicalError(
-                    f"LexicalError: Ambiguous Tokenization: {curr_selected_token.name} - {token.name}"
+                raise TokenResolutionError(
+                    f"Ambiguous Tokenization: {curr_selected_token.name} - {token.name}"
                 )
 
         curr_selected_token.content = content
