@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from functools import reduce
 from copy import deepcopy
 
@@ -34,7 +34,6 @@ class NFA(ABC):
             return state_tag
 
         for state in self.states:
-            num_states
             state_id = state_ids[id(state)]
             for transition_char in state.transitions.keys():
                 for neighbour in state.transitions[transition_char]:
