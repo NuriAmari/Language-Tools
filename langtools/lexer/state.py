@@ -1,15 +1,19 @@
 from collections import defaultdict
 from abc import ABC, abstractmethod
+from typing import Optional, Set, Dict
 
-from lexer.exceptions import TokenResolutionError
+from langtools.lexer.exceptions import TokenResolutionError
+from langtools.lexer.token import Token
 
 
 class NFAState:
-    def __init__(self, accepting=False, tokens=None, tag=None):
-        self.transitions = defaultdict(set)
-        self.accepting = accepting
-        self.tokens = accepting and tokens or set()
-        self.tag = tag
+    def __init__(
+        self, accepting: bool = False, tokens: Optional[Set[Token]] = None, tag=None
+    ):
+        self.transitions: Dict[str, Set[NFAState]] = defaultdict(set)
+        self.accepting: bool = accepting
+        self.tokens: Set[Token] = accepting and tokens or set()
+        self.tag: Optional[str] = tag
 
     def add_transition(self, transition_char, target_state):
         self.transitions[transition_char].add(target_state)

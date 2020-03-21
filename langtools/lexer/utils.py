@@ -1,14 +1,14 @@
 import io
 
-from typing import List, Tuple
-from lexer.exceptions import LexicalError
+from typing import List, Tuple, Union
+from langtools.lexer.exceptions import LexicalError
 
 
 EOF = "EOF"
 
 
 class LexerStreamReader:
-    def __init__(self, stream: io.TextIOBase):
+    def __init__(self, stream: Union[io.TextIOBase, io.StringIO]):
         self.stream = stream
         self.marks_stack: List[int] = []
         self.line_start_positions: List[int] = [0]

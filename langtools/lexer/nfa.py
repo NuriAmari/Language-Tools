@@ -1,12 +1,20 @@
 from abc import ABC
 from functools import reduce
 from copy import deepcopy
+from typing import List
 
-from lexer.state import NFAState
+from langtools.lexer.state import NFAState
+from langtools.lexer.token import Token
 
 
 class NFA(ABC):
-    def __init__(self, start_state, end_state, alphabet, states):
+    def __init__(
+        self,
+        start_state: NFAState,
+        end_state: NFAState,
+        alphabet,
+        states: List[NFAState],
+    ):
         self.start_state = start_state
         self.end_state = end_state
         self.alphabet = alphabet
@@ -41,6 +49,9 @@ class NFA(ABC):
                     print(
                         f"{state_id}{state_tag(state)}-{transition_char}->{neighbour_id}{state_tag(neighbour)}"
                     )
+
+    def add_token(self, new_token: Token):
+        self.end_state.tokens.add(new_token)
 
 
 class Atom(NFA):

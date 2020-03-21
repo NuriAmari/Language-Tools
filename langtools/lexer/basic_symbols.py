@@ -1,8 +1,8 @@
 import string
 
-from lexer.nfa import Atom, Concat, KleeneStar, Union
+from langtools.lexer.nfa import Atom, Concat, KleeneStar, Union
 
-from lexer.dfa import DFA
+from langtools.lexer.dfa import DFA
 
 ZERO = Atom("0")
 ONE = Atom("1")

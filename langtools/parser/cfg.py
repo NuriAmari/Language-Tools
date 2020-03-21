@@ -2,9 +2,9 @@ from abc import ABC
 from collections import defaultdict
 from typing import List, Iterable, Union, Set, Optional, Tuple, Dict, Callable
 
-from parser.exceptions import ParsingException
-from lexer.token import Token
-from ast.ast import ASTNode
+from langtools.parser.exceptions import ParsingException
+from langtools.lexer.token import Token
+from langtools.ast.ast import ASTNode
 
 
 class Symbol(ABC):

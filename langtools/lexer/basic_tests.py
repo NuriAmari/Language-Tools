@@ -1,7 +1,7 @@
 import unittest
 
-from lexer.nfa import *
-from lexer.dfa import DFA
+from langtools.lexer.nfa import *
+from langtools.lexer.dfa import DFA
 
 
 class AtomTests(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from parser.cfg import CFG, ProductionRule, NonTerminal, Terminal, Epsilon
+from langtools.parser.cfg import CFG, ProductionRule, NonTerminal, Terminal, Epsilon
 
 ASCII = [chr(i) for i in range(128)]
 

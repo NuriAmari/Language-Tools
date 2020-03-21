@@ -1,10 +1,8 @@
 from typing import Optional
 
-from lexer.utils import LexerStreamReader
-
 
 class LexicalError(Exception):
-    def __init__(self, reader: LexerStreamReader, message: Optional[str] = None):
+    def __init__(self, reader, message: Optional[str] = None):
         error_line, error_col, error_line_content = reader.get_curr_line()
         error_header: str = f"LexicalError: Line {error_line}, column {error_col}"
         error_pointer: str = " " * (error_col - 1) + "^"

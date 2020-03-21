@@ -1,7 +1,7 @@
 from typing import Dict, FrozenSet, Set
 from collections import deque
 
-from lexer.state import DFAState, NFAState
+from langtools.lexer.state import DFAState, NFAState
 
 
 class DFA:

@@ -1,16 +1,16 @@
 import io
-from typing import List, Optional
+from typing import List, Optional, Union
 from copy import deepcopy
 
-from lexer.exceptions import LexicalError, TokenResolutionError
+from langtools.lexer.exceptions import LexicalError, TokenResolutionError
 
-from lexer.state import DFAState
-from lexer.dfa import DFA
-from lexer.token import Token
-from lexer.utils import LexerStreamReader, EOF
+from langtools.lexer.state import DFAState
+from langtools.lexer.dfa import DFA
+from langtools.lexer.token import Token
+from langtools.lexer.utils import LexerStreamReader, EOF
 
 
-def tokenize(input_stream: io.TextIOBase, tokenizing_dfa: DFA):
+def tokenize(input_stream: Union[io.TextIOBase, io.StringIO], tokenizing_dfa: DFA):
     """
     Performs simplified maximal munch on the input stream
     """
