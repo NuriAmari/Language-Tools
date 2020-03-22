@@ -30,7 +30,7 @@ def tokenize(input_stream: Union[io.TextIOBase, io.StringIO], tokenizing_dfa: DF
         nonlocal curr_state
 
         if last_accepting_state is not None:
-            reader.pop_mark()
+            reader.backtrack()
             resolve_token()
             last_accepting_state = None
             curr_state = tokenizing_dfa.start_state
@@ -56,20 +56,20 @@ def tokenize(input_stream: Union[io.TextIOBase, io.StringIO], tokenizing_dfa: DF
         transition_char = reader.next()
 
         if transition_char == EOF:
-            if reader.mark_at_curr_pos():
+            if reader.mark_at_end():
                 # reached EOF and tokenized entire stream
                 resolve_token()
                 break
             else:
                 resolve_transition_error()
-
-        if transition_char in curr_state.transitions:
-            curr_state = curr_state.transitions[transition_char]
-            curr_lexme.append(transition_char)
-            if curr_state.accepting:
-                last_accepting_state = curr_state
-                reader.mark()
         else:
-            resolve_transition_error()
+            if transition_char in curr_state.transitions:
+                curr_state = curr_state.transitions[transition_char]
+                curr_lexme.append(transition_char)
+                if curr_state.accepting:
+                    last_accepting_state = curr_state
+                    reader.mark()
+            else:
+                resolve_transition_error()
 
     return tokens

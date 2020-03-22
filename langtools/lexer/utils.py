@@ -25,22 +25,34 @@ class LexerStreamReader:
     def mark(self) -> None:
         self.marks_stack.append(self.stream.tell())
 
-    def pop_mark(self) -> None:
-        if len(self.marks_stack) > 1:
-            self.marks_stack.pop()
+    def backtrack(self) -> None:
+        if self.marks_stack:
+            self.stream.seek(self.marks_stack[-1])
             while (
                 self.line_start_positions
                 and self.line_start_positions[-1] > self.marks_stack[-1]
             ):
                 self.line_start_positions.pop()
-            self.stream.seek(self.marks_stack[-1])
         else:
             raise LexicalError(reader=self)
 
-    def mark_at_curr_pos(self) -> bool:
+    def mark_at_end(self) -> bool:
         if not self.marks_stack:
             return False
-        return self.stream.tell() == self.marks_stack[-1]
+        curr_pos = self.stream.tell()
+        self.stream.seek(self.marks_stack[-1])
+        next_char = self.stream.read(1)
+
+        result = True
+
+        while next_char:
+            if not next_char.isspace():
+                result = False
+                break
+            next_char = self.stream.read(1)
+
+        self.stream.seek(curr_pos)
+        return result
 
     def get_curr_line(self) -> Tuple[int, int, str]:
         """
