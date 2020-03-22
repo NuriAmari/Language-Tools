@@ -28,13 +28,18 @@ class LexerStreamReader:
     def pop_mark(self) -> None:
         if len(self.marks_stack) > 1:
             self.marks_stack.pop()
-            while self.line_start_positions[-1] > self.marks_stack[-1]:
+            while (
+                self.line_start_positions
+                and self.line_start_positions[-1] > self.marks_stack[-1]
+            ):
                 self.line_start_positions.pop()
             self.stream.seek(self.marks_stack[-1])
         else:
-            raise LexicalError("Pop called on mark stack with < 2 items")
+            raise LexicalError(reader=self)
 
     def mark_at_curr_pos(self) -> bool:
+        if not self.marks_stack:
+            return False
         return self.stream.tell() == self.marks_stack[-1]
 
     def get_curr_line(self) -> Tuple[int, int, str]:
@@ -46,4 +51,4 @@ class LexerStreamReader:
         self.stream.seek(line_start)
         retval = self.stream.readline()
         self.stream.seek(curr_pos)
-        return (len(self.line_start_positions) - 1, curr_pos - line_start, retval)
+        return (len(self.line_start_positions) - 1, curr_pos - line_start - 1, retval)
