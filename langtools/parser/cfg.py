@@ -274,7 +274,7 @@ class CFG:
                 elif isinstance(top, Terminal):
                     if top.name == curr_token.name:
                         ast_stack[-1][0].children.append(
-                            ASTNode(name=curr_token.name, lexme=curr_token.content)
+                            ASTNode(name=curr_token.name, lexme=curr_token.lexme)
                         )
                         ast_stack[-1] = (ast_stack[-1][0], ast_stack[-1][1] - 1)
                         while len(ast_stack) > 1 and ast_stack[-1][1] == 0:

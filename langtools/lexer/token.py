@@ -1,8 +1,11 @@
+from typing import Optional
+
+
 class Token:
-    def __init__(self, name, priority=1):
+    def __init__(self, name, lexme: Optional[str] = None, priority=1):
         self.name = name
         self.priority = priority
-        self.content = None
+        self.lexme = lexme
 
     def __repr__(self):
-        return self.name + f": {self.content}" if self.content else ""
+        return self.name + f": {self.lexme}" if self.lexme else ""

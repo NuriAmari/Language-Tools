@@ -43,14 +43,14 @@ class DFAState:
 
         return "\n".join(lines)
 
-    def resolve_token(self, content):
+    def resolve_token(self, lexme):
 
         # TODO: Store tokens in priority_queue in the first place
         curr_selected_token = None
         curr_priority = float("inf")
 
         if len(self.tokens) == 0:
-            raise TokenResolutionError(f"State representing {content} has no tokens")
+            raise TokenResolutionError(f"State representing {lexme} has no tokens")
 
         for token in self.tokens:
             if token.priority < curr_priority:
@@ -61,5 +61,5 @@ class DFAState:
                     f"Ambiguous Tokenization: {curr_selected_token.name} - {token.name}"
                 )
 
-        curr_selected_token.content = content
+        curr_selected_token.lexme = lexme
         return curr_selected_token
