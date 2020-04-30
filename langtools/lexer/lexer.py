@@ -14,7 +14,11 @@ def tokenize_str(input_str: str, tokenizing_dfa: DFA):
     return tokenize(io.StringIO(input_str), tokenizing_dfa)
 
 
-def tokenize(input_stream: Union[io.TextIOBase, io.StringIO], tokenizing_dfa: DFA):
+def tokenize(
+    input_stream: Union[io.TextIOBase, io.StringIO],
+    tokenizing_dfa: DFA,
+    white_space_delimit=False,
+):
     """
     Performs simplified maximal munch on the input stream
     """
@@ -22,7 +26,7 @@ def tokenize(input_stream: Union[io.TextIOBase, io.StringIO], tokenizing_dfa: DF
     curr_state: DFAState = tokenizing_dfa.start_state
     tokens: List[Token] = []
     curr_lexme: List[str] = []  # lexme is stored in list for fast concat
-    reader = LexerStreamReader(input_stream)
+    reader = LexerStreamReader(input_stream, ignore_white_space=not white_space_delimit)
 
     def resolve_transition_error():
         nonlocal last_accepting_state
@@ -54,6 +58,13 @@ def tokenize(input_stream: Union[io.TextIOBase, io.StringIO], tokenizing_dfa: DF
 
     while True:
         transition_char = reader.next()
+
+        if transition_char.isspace():
+            if curr_state != tokenizing_dfa.start_state:
+                resolve_transition_error()
+
+            while transition_char.isspace():
+                transition_char = reader.next()
 
         if transition_char == EOF:
             if reader.mark_at_end():

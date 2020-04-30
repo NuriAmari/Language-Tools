@@ -8,14 +8,17 @@ EOF = "EOF"
 
 
 class LexerStreamReader:
-    def __init__(self, stream: Union[io.TextIOBase, io.StringIO]):
+    def __init__(
+        self, stream: Union[io.TextIOBase, io.StringIO], ignore_white_space=True
+    ):
         self.stream = stream
         self.marks_stack: List[int] = []
         self.line_start_positions: List[int] = [0]
+        self.ignore_white_space: bool = ignore_white_space
 
     def next(self) -> str:
         next_char: str = self.stream.read(1)
-        while next_char.isspace():
+        while self.ignore_white_space and next_char.isspace():
             if next_char == "\n":
                 self.line_start_positions.append(self.stream.tell())
             next_char = self.stream.read(1)

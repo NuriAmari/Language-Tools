@@ -230,9 +230,10 @@ class CFG:
         self.parse_table = parse_table
 
     def is_grammar_LL1(self) -> bool:
-        for cell in self.parse_table.values():
+        for index, cell in self.parse_table.items():
             if len(cell) > 1:
-                print(cell)
+                print(f"index: {index}")
+                print(f"cell: {cell}")
                 return False
         return True
 
