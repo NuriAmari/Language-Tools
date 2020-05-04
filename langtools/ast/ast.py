@@ -1,10 +1,19 @@
 from __future__ import annotations
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Set
 
 
 class ASTNode:
 
     indent_width = 1
+
+    @classmethod
+    def from_dict_literal(cls, literal: Dict) -> ASTNode:
+        """Used to construct an entire AST from composed dict literals, particularly useful for testing"""
+
+        name = list(literal.keys())[0]
+        root = cls(name)
+        root.children = [cls.from_dict_literal(child) for child in literal[name]]
+        return root
 
     def __init__(self, name: str, lexme: Optional[str] = None):
         self.children: List[ASTNode] = []
@@ -22,7 +31,7 @@ class ASTNode:
             ]
         )
         for child in self.children:
-            output.extend([" "] * (depth + 1) * self.__class__.indent_width)
+            output.extend([" "] * (depth + 1) * self.indent_width)
             output.extend(child.visualize(depth + 2))
 
         return output
@@ -30,13 +39,13 @@ class ASTNode:
     # Used to flatten AST when recursive rules to form things like lists make the tree unecesssarily tall
     # Name aliases is used to alias node names that shouldn't be direclty related
     # Ex. If A is aliased to B, you'll never have an A node with B as a direct child
-    def flatten(self, name_aliases: Dict[str, str]):
+    def flatten(self, name_aliases: Dict[str, Set[str]]):
         flattened_children: List[ASTNode] = []
         for child in self.children:
             if (
                 child.name == self.name
                 or self.name in name_aliases
-                and name_aliases[self.name] == child.name
+                and child.name in name_aliases[self.name]
             ):
                 flattened_children.extend(child.flatten(name_aliases))
             else:
