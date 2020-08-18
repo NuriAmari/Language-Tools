@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="cpp" targetName="Language-Tools" />
+      <config projectName="cpp" targetName="LaraTests" />
+      <config projectName="cpp" targetName="gtest" />
+      <config projectName="cpp" targetName="gmock" />
+      <config projectName="cpp" targetName="cpp" />
+      <config projectName="cpp" targetName="gmock_main" />
+      <config projectName="cpp" targetName="gtest_main" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="592086e5-b3f7-4f14-92f0-34bf60c3c12e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/DFA.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/DFA.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/DFA.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/DFA.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/State.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/State.h" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="OCResolveContextSettings">
+    <option name="configuration" value="0-Debug-Language-Tools" />
+  </component>
+  <component name="ProjectId" id="1eKCp0swinnVEjPqxkgGhNaWqZy" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="cf.first.check.clang-format" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+  </component>
+  <component name="RunManager" selected="CMake Application.cpp">
+    <configuration name="LaraTests" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp" TARGET_NAME="LaraTests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="cpp" RUN_TARGET_NAME="LaraTests" TEST_MODE="SUITE_TEST">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+        <option name="BeforeTestRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Language-Tools" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp" TARGET_NAME="Language-Tools" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="cpp" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp" TARGET_NAME="cpp" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="cpp" RUN_TARGET_NAME="cpp">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="gmock" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp" TARGET_NAME="gmock" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="gmock_main" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp" TARGET_NAME="gmock_main" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="gtest" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp" TARGET_NAME="gtest" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="gtest_main" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp" TARGET_NAME="gtest_main" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.Language-Tools" />
+      <item itemvalue="CMake Application.cpp" />
+      <item itemvalue="CMake Application.gmock" />
+      <item itemvalue="CMake Application.gmock_main" />
+      <item itemvalue="CMake Application.gtest" />
+      <item itemvalue="CMake Application.gtest_main" />
+      <item itemvalue="Google Test.LaraTests" />
+    </list>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="592086e5-b3f7-4f14-92f0-34bf60c3c12e" name="Default Changelist" comment="" />
+      <created>1594061076549</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1594061076549</updated>
+      <workItem from="1594061080398" duration="31000" />
+      <workItem from="1594061956679" duration="313000" />
+      <workItem from="1594063917256" duration="1210000" />
+      <workItem from="1594065408606" duration="273000" />
+      <workItem from="1594065692270" duration="125000" />
+      <workItem from="1594065827629" duration="329000" />
+      <workItem from="1594066166798" duration="540000" />
+      <workItem from="1594066716154" duration="60000" />
+      <workItem from="1594084195019" duration="2118000" />
+      <workItem from="1594086324559" duration="236000" />
+      <workItem from="1594086571091" duration="10274000" />
+      <workItem from="1594346025003" duration="15000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="884" y="386" width="151" height="221" key="#Vim_Emulation" timestamp="1594065256703">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="884" y="386" width="151" height="221" key="#Vim_Emulation/0.0.1920.1080@0.0.1920.1080" timestamp="1594065256703" />
+    <state x="724" y="300" width="460" height="359" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1594065803116">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="724" y="300" width="460" height="359" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1080@0.0.1920.1080" timestamp="1594065803116" />
+    <state x="600" y="74" width="707" height="811" key="CommitChangelistDialog2" timestamp="1594086338877">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="600" y="74" width="707" height="811" key="CommitChangelistDialog2/0.0.1920.1080@0.0.1920.1080" timestamp="1594086338877" />
+    <state x="567" y="136" key="SettingsEditor" timestamp="1594086526444">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="567" y="136" key="SettingsEditor/0.0.1920.1080@0.0.1920.1080" timestamp="1594086526444" />
+    <state x="706" y="227" width="505" height="399" key="search.everywhere.popup" timestamp="1594135087812">
+      <screen x="0" y="0" width="1920" height="1080" />
+    </state>
+    <state x="706" y="227" width="505" height="399" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1594135087812" />
+  </component>
+</project>

@@ -26,6 +26,7 @@ public:
     ~DFA();
 
     bool match(const std::string& inputStr);
+    std::vector<Token> tokenize(const std::string& inputStr);
 };
 
 

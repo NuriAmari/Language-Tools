@@ -31,8 +31,15 @@ DFA::DFA(const NFA& nfaToConvert) {
     std::unordered_map<std::unordered_set<NFAState*>, DFAState*, UnorderedSetHasher<NFAState*>> nfaStatesToDfaStateMap;
     std::unordered_set<NFAState*> startClosure {nfaToConvert.m_startState};
     DFA::expandToEpsilonClosure(startClosure);
+    std::unordered_set<Token> startTokens;
+    bool startStateAccepting = false;
 
-    m_startState = new DFAState(nfaToConvert.m_startState->m_accepting);
+    for (NFAState* state : startClosure) {
+        startStateAccepting = startStateAccepting || state->m_accepting;
+        startTokens.insert(state->m_tokens.begin(), state->m_tokens.end());
+    }
+
+    m_startState = new DFAState(startStateAccepting, startTokens.begin(), startTokens.end());
     nfaStatesToDfaStateMap.insert({startClosure, m_startState});
 
     std::deque<std::unordered_set<NFAState*>> stateQ {startClosure};
@@ -60,13 +67,12 @@ DFA::DFA(const NFA& nfaToConvert) {
                 if (nfaStatesToDfaStateMap.find(transitionCharClosure) == nfaStatesToDfaStateMap.end()) {
                     stateQ.push_back(transitionCharClosure);
                     bool newStateAccepting = false;
+                    std::unordered_set<Token> newStateTokens;
                     for (const NFAState* state : transitionCharClosure) {
-                        if (state->m_accepting) {
-                            newStateAccepting = true;
-                            break;
-                        }
+                        newStateAccepting = newStateAccepting || state->m_accepting;
+                        newStateTokens.insert(state->m_tokens.begin(), state->m_tokens.end());
                     }
-                    nfaStatesToDfaStateMap.insert({transitionCharClosure, new DFAState(newStateAccepting)});
+                    nfaStatesToDfaStateMap.insert({transitionCharClosure, new DFAState(newStateAccepting, newStateTokens.begin(), newStateTokens.end())});
                 }
 
                 nfaStatesToDfaStateMap.at(currDfaState)->addTransition(transitionChar, nfaStatesToDfaStateMap.at(transitionCharClosure));
@@ -132,4 +138,33 @@ bool DFA::match(const std::string& inputStr) {
         currState = currState->m_transitions.at(transitionChar);
     }
     return currState->m_accepting;
+}
+
+std::vector<Token> DFA::tokenize(const std::string& inputStr) {
+    if (inputStr.empty()) {
+        return std::vector<Token>{};
+    }
+    std::vector<int> acceptStack{0};
+    std::vector<Token> result;
+
+    DFAState* currState = m_startState;
+    std::string currLexme{""};
+    for (int i = 0; i < inputStr.size(); i++) {
+        char transitionChar = inputStr.at(i);
+        if (currState->m_transitions.find(transitionChar) != currState->m_transitions.end()) {
+            currState = currState->m_transitions.at(transitionChar);
+            if (currState->m_accepting) {
+                acceptStack.push_back(i+1);
+            }
+            currLexme.push_back(transitionChar);
+        } else if (currState->m_accepting) {
+            if (!currLexme.empty()) {
+                result.push_back(currState->resolveToken());
+                result.back().setLexme(std::move(currLexme));
+                currState = m_startState;
+                i -= 1;
+            }
+            // fail
+        }
+    }
 }
