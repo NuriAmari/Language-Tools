@@ -8,6 +8,8 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <iterator>
+#include <memory>
 #include <utility>
 #include "State.h"
 
@@ -20,20 +22,17 @@ class NFA {
 
     NFAState* m_startState = nullptr;
     NFAState* m_endState = nullptr;
-    std::unordered_set<NFAState*> m_states;
+    std::unordered_set<std::unique_ptr<NFAState>> m_states;
     std::unordered_set<char> m_alphabet;
 
 public:
     NFA() = default;
-    NFA(NFAState* startState, NFAState* endState, const std::unordered_set<NFAState*>& states);
-    NFA(NFAState* startState, NFAState* endState);
-    NFA(NFAState* startState);
-
+    NFA(std::unique_ptr<NFAState>&& state);
+    NFA(std::unique_ptr<NFAState>&& startState, std::unique_ptr<NFAState>&& endState);
     NFA(const NFA& other);
     NFA(NFA&& other);
     NFA& operator=(const NFA& other);
     NFA& operator=(NFA&& other);
-    ~NFA();
 };
 
 class Atom : public NFA {

@@ -1,27 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="cpp" targetName="Language-Tools" />
-      <config projectName="cpp" targetName="LaraTests" />
-      <config projectName="cpp" targetName="gtest" />
-      <config projectName="cpp" targetName="gmock" />
       <config projectName="cpp" targetName="cpp" />
+      <config projectName="cpp" targetName="gmock" />
+      <config projectName="cpp" targetName="Language-Tools" />
+      <config projectName="cpp" targetName="gtest" />
+      <config projectName="cpp" targetName="LaraTests" />
       <config projectName="cpp" targetName="gmock_main" />
       <config projectName="cpp" targetName="gtest_main" />
     </generated>
   </component>
-  <component name="CMakeSettings">
+  <component name="CMakeSettings" AUTO_RELOAD="true">
     <configurations>
       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
     </configurations>
   </component>
   <component name="ChangeListManager">
     <list default="true" id="592086e5-b3f7-4f14-92f0-34bf60c3c12e" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/src/CMakeLists.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lexer/DFA.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/DFA.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lexer/DFA.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/DFA.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/NFA.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/NFA.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/NFA.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/NFA.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/lexer/State.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/State.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/Token.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/Token.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lexer/Token.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/lexer/Token.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -34,9 +58,6 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
-  </component>
-  <component name="OCResolveContextSettings">
-    <option name="configuration" value="0-Debug-Language-Tools" />
   </component>
   <component name="ProjectId" id="1eKCp0swinnVEjPqxkgGhNaWqZy" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -51,7 +72,7 @@
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="cf.first.check.clang-format" value="false" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/lib" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.tslint" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -60,7 +81,12 @@
     <property name="node.js.selected.package.tslint" value="(autodetect)" />
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
-  <component name="RunManager" selected="CMake Application.cpp">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/lib" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Google Test.LaraTests">
     <configuration name="LaraTests" type="CMakeGoogleTestRunConfigurationType" factoryName="Google Test" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="cpp" TARGET_NAME="LaraTests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="cpp" RUN_TARGET_NAME="LaraTests" TEST_MODE="SUITE_TEST">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
@@ -98,14 +124,17 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="CMake Application.Language-Tools" />
       <item itemvalue="CMake Application.cpp" />
+      <item itemvalue="CMake Application.Language-Tools" />
       <item itemvalue="CMake Application.gmock" />
       <item itemvalue="CMake Application.gmock_main" />
       <item itemvalue="CMake Application.gtest" />
       <item itemvalue="CMake Application.gtest_main" />
       <item itemvalue="Google Test.LaraTests" />
     </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -126,13 +155,30 @@
       <workItem from="1594086324559" duration="236000" />
       <workItem from="1594086571091" duration="10274000" />
       <workItem from="1594346025003" duration="15000" />
+      <workItem from="1600028838985" duration="480000" />
+      <workItem from="1600029339444" duration="7858000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="2" />
   </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
   <component name="WindowStateProjectService">
+    <state x="986" y="386" key="#Language-Tools" timestamp="1600033498780">
+      <screen x="0" y="23" width="2560" height="1337" />
+    </state>
+    <state x="986" y="386" key="#Language-Tools/0.23.2560.1337@0.23.2560.1337" timestamp="1600033498780" />
     <state x="884" y="386" width="151" height="221" key="#Vim_Emulation" timestamp="1594065256703">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
@@ -145,13 +191,30 @@
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="600" y="74" width="707" height="811" key="CommitChangelistDialog2/0.0.1920.1080@0.0.1920.1080" timestamp="1594086338877" />
+    <state width="2518" height="355" key="GridCell.Tab.0.bottom" timestamp="1600315703778">
+      <screen x="0" y="23" width="2560" height="1337" />
+    </state>
+    <state width="2518" height="355" key="GridCell.Tab.0.bottom/0.23.2560.1337@0.23.2560.1337" timestamp="1600315703778" />
+    <state width="2518" height="355" key="GridCell.Tab.0.center" timestamp="1600315703777">
+      <screen x="0" y="23" width="2560" height="1337" />
+    </state>
+    <state width="2518" height="355" key="GridCell.Tab.0.center/0.23.2560.1337@0.23.2560.1337" timestamp="1600315703777" />
+    <state width="2518" height="355" key="GridCell.Tab.0.left" timestamp="1600315703776">
+      <screen x="0" y="23" width="2560" height="1337" />
+    </state>
+    <state width="2518" height="355" key="GridCell.Tab.0.left/0.23.2560.1337@0.23.2560.1337" timestamp="1600315703776" />
+    <state width="2518" height="355" key="GridCell.Tab.0.right" timestamp="1600315703777">
+      <screen x="0" y="23" width="2560" height="1337" />
+    </state>
+    <state width="2518" height="355" key="GridCell.Tab.0.right/0.23.2560.1337@0.23.2560.1337" timestamp="1600315703777" />
     <state x="567" y="136" key="SettingsEditor" timestamp="1594086526444">
       <screen x="0" y="0" width="1920" height="1080" />
     </state>
     <state x="567" y="136" key="SettingsEditor/0.0.1920.1080@0.0.1920.1080" timestamp="1594086526444" />
-    <state x="706" y="227" width="505" height="399" key="search.everywhere.popup" timestamp="1594135087812">
-      <screen x="0" y="0" width="1920" height="1080" />
+    <state x="941" y="304" width="674" height="494" key="search.everywhere.popup" timestamp="1600315999432">
+      <screen x="0" y="23" width="2560" height="1337" />
     </state>
     <state x="706" y="227" width="505" height="399" key="search.everywhere.popup/0.0.1920.1080@0.0.1920.1080" timestamp="1594135087812" />
+    <state x="941" y="304" width="674" height="494" key="search.everywhere.popup/0.23.2560.1337@0.23.2560.1337" timestamp="1600315999432" />
   </component>
 </project>

@@ -28,7 +28,7 @@ void DFA::expandToEpsilonClosure(std::unordered_set<NFAState *>& currClosure) {
 }
 
 DFA::DFA(const NFA& nfaToConvert) {
-    std::unordered_map<std::unordered_set<NFAState*>, DFAState*, UnorderedSetHasher<NFAState*>> nfaStatesToDfaStateMap;
+    std::unordered_map<std::unordered_set<NFAState*>, std::unique_ptr<DFAState>, UnorderedSetHasher<NFAState*>> nfaStatesToDfaStateMap;
     std::unordered_set<NFAState*> startClosure {nfaToConvert.m_startState};
     DFA::expandToEpsilonClosure(startClosure);
     std::unordered_set<Token> startTokens;
@@ -39,8 +39,9 @@ DFA::DFA(const NFA& nfaToConvert) {
         startTokens.insert(state->m_tokens.begin(), state->m_tokens.end());
     }
 
-    m_startState = new DFAState(startStateAccepting, startTokens.begin(), startTokens.end());
-    nfaStatesToDfaStateMap.insert({startClosure, m_startState});
+    std::unique_ptr<DFAState> startState = std::make_unique<DFAState>(startStateAccepting, startTokens.begin(), startTokens.end());
+    m_startState = startState.get();
+    nfaStatesToDfaStateMap.insert({startClosure, std::move(startState)});
 
     std::deque<std::unordered_set<NFAState*>> stateQ {startClosure};
     while (!stateQ.empty()) {
@@ -72,16 +73,16 @@ DFA::DFA(const NFA& nfaToConvert) {
                         newStateAccepting = newStateAccepting || state->m_accepting;
                         newStateTokens.insert(state->m_tokens.begin(), state->m_tokens.end());
                     }
-                    nfaStatesToDfaStateMap.insert({transitionCharClosure, new DFAState(newStateAccepting, newStateTokens.begin(), newStateTokens.end())});
+                    nfaStatesToDfaStateMap.insert({transitionCharClosure, std::make_unique<DFAState>(newStateAccepting, newStateTokens.begin(), newStateTokens.end())});
                 }
 
-                nfaStatesToDfaStateMap.at(currDfaState)->addTransition(transitionChar, nfaStatesToDfaStateMap.at(transitionCharClosure));
+                nfaStatesToDfaStateMap.at(currDfaState).get()->addTransition(transitionChar, nfaStatesToDfaStateMap.at(transitionCharClosure).get());
             }
         }
     }
 
-    for (std::pair<std::unordered_set<NFAState*>,DFAState*> mapping : nfaStatesToDfaStateMap) {
-        m_states.insert(mapping.second);
+    for (std::pair<std::unordered_set<NFAState*>,std::unique_ptr<DFAState>&> mapping : nfaStatesToDfaStateMap) {
+        m_states.insert(std::move(mapping.second));
     }
 }
 
@@ -98,16 +99,16 @@ DFA& DFA::operator=(DFA& other) {
     std::unordered_map<DFAState*, DFAState*> stateCopyMapping;
 
     // copy the states!
-    for (DFAState* state : other.m_states) {
-        DFAState* currCopy = new DFAState{state->m_accepting};
-        stateCopyMapping.insert({state, currCopy});
-        m_states.insert(currCopy);
+    for (const std::unique_ptr<DFAState>& state : other.m_states) {
+        std::unique_ptr<DFAState> currCopy = std::make_unique<DFAState>(state->m_accepting);
+        stateCopyMapping.insert({state.get(), currCopy.get()});
+        m_states.insert(std::move(currCopy));
     }
 
     // copy the transitions!
-    for (DFAState* state : other.m_states) {
+    for (const std::unique_ptr<DFAState>& state : other.m_states) {
         for (const std::pair<char, DFAState*>& transition : state->m_transitions) {
-            DFAState* startState = stateCopyMapping.at(state);
+            DFAState* startState = stateCopyMapping.at(state.get());
             DFAState* endState = stateCopyMapping.at(transition.second);
             if (startState->m_transitions.find(transition.first) != startState->m_transitions.end()) {
                 throw "Copying this DFA went horribly wrong";
@@ -121,12 +122,6 @@ DFA& DFA::operator=(DFA&& other) {
     m_startState = other.m_startState;
     m_states = std::move(other.m_states);
     return *this;
-}
-
-DFA::~DFA() {
-    for (DFAState* state : m_states) {
-        delete state;
-    }
 }
 
 bool DFA::match(const std::string& inputStr) {
@@ -167,4 +162,6 @@ std::vector<Token> DFA::tokenize(const std::string& inputStr) {
             // fail
         }
     }
+
+    return result;
 }

@@ -4,6 +4,10 @@
 
 #include "Token.h"
 
+bool operator==(const Token& lhs, const Token& rhs) {
+    return lhs.m_lexme == rhs.m_lexme && lhs.m_type == rhs.m_type;
+}
+
 Token::Token(std::string type, int priority) {
     m_type = type;
     m_priority = priority;

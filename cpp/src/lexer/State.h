@@ -24,14 +24,18 @@ public:
         }
     }
 
-    void addTokens(std::iterator<std::input_iterator_tag, Token> begin, std::iterator<std::input_iterator_tag, Token>end) {
+    template <class It>
+    void addTokens(It begin, It end) {
         m_tokens.insert(begin, end);
     }
-    void addTokens(Token token) {
+    void addTokens(const Token& token) {
        m_tokens.insert(token);
     }
+
     NFAState(bool accepting = false):m_accepting{accepting} { }
-    NFAState(bool accepting, std::iterator<std::input_iterator_tag, Token>first, std::iterator<std::input_iterator_tag, Token>last):m_accepting{accepting} {
+
+    template <class It>
+    NFAState(bool accepting, It first, It last):m_accepting{accepting} {
         m_tokens.insert(first, last);
     }
 };

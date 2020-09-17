@@ -15,7 +15,10 @@ public:
 
     Token(std::string type, int priority);
     void setLexme(std::string lexme);
+
+    friend bool operator==(const Token& lhs, const Token& rhs);
 };
+
 
 namespace std {
     template <>

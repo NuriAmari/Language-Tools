@@ -4,23 +4,17 @@
 
 #include "NFA.h"
 
-NFA::NFA(NFAState* startState, NFAState* endState, const std::unordered_set<NFAState*>& states) {
-    m_startState = startState;
-    m_endState = endState;
-    m_states = {startState, endState};
-    m_states.insert(states.begin(), states.end());
+NFA::NFA(std::unique_ptr<NFAState>&& startState, std::unique_ptr<NFAState>&& endState) {
+    m_startState = startState.get();
+    m_endState = endState.get();
+    m_states.insert(std::move(startState));
+    m_states.insert(std::move(endState));
 }
 
-NFA::NFA(NFAState* startState, NFAState* endState) {
-    m_startState = startState;
-    m_endState = endState;
-    m_states = {startState, endState};
-}
-
-NFA::NFA(NFAState* startAndEndState) {
-    m_startState = startAndEndState;
-    m_endState = startAndEndState;
-    m_states = {startAndEndState};
+NFA::NFA(std::unique_ptr<NFAState>&& state) {
+    m_startState = state.get();
+    m_endState = state.get();
+    m_states.insert(std::move(state));
 }
 
 NFA::NFA(const NFA& other) {
@@ -36,16 +30,16 @@ NFA& NFA::operator=(const NFA& other) {
     std::unordered_map<NFAState*, NFAState*> stateCopyMapping;
 
     // copy the states
-    for (NFAState* state : other.m_states) {
-        NFAState* currCopy = new NFAState{state->m_accepting};
-        stateCopyMapping.insert({state, currCopy});
-        m_states.insert(currCopy);
+    for (const std::unique_ptr<NFAState>& state : other.m_states) {
+        std::unique_ptr<NFAState> currCopy = std::make_unique<NFAState>(state.get()->m_accepting);
+        stateCopyMapping.insert({state.get(), currCopy.get()});
+        m_states.insert(std::move(currCopy));
     }
 
     // copy the transitions
-    for (NFAState* state : other.m_states) {
+    for (const std::unique_ptr<NFAState>& state : other.m_states) {
         for (const std::pair<char, std::unordered_set<NFAState*>>& transition : state->m_transitions) {
-            NFAState* startState = stateCopyMapping.at(state);
+            NFAState* startState = stateCopyMapping.at(state.get());
             for (NFAState* endStateToCopy : transition.second) {
                 NFAState* endState = stateCopyMapping.at(endStateToCopy);
                 startState->addTransition(transition.first, endState);
@@ -67,32 +61,26 @@ NFA& NFA::operator=(NFA&& other) {
     return *this;
 }
 
-NFA::~NFA() {
-    for (NFAState* state : m_states) {
-        delete state;
-    }
-}
-
-Atom::Atom(const char charToRecognize) : NFA(new NFAState(), new NFAState(true)) {
+Atom::Atom(const char charToRecognize) : NFA(std::make_unique<NFAState>(), std::make_unique<NFAState>(true)) {
     m_startState->addTransition(charToRecognize, m_endState);
     m_alphabet.insert(charToRecognize);
 }
 
-Union::Union(std::vector<NFA>&& operands): NFA(new NFAState(), new NFAState(true)) {
+Union::Union(std::vector<NFA>&& operands): NFA(std::make_unique<NFAState>(), std::make_unique<NFAState>(true)) {
     if (operands.size() < 1) {
         throw "Union expects at least one operator";
     }
     for (NFA& operand : operands) {
         m_alphabet.insert(operand.m_alphabet.begin(), operand.m_alphabet.end());
         m_startState->addTransition('\0', operand.m_startState);
-        m_states.insert(operand.m_states.begin(), operand.m_states.end());
+        m_states.merge(std::move(operand.m_states));
         operand.m_states.clear();
         operand.m_endState->m_accepting = false;
         operand.m_endState->addTransition('\0', m_endState);
     }
 }
 
-Concat::Concat(std::vector<NFA>&& operands) : NFA(new NFAState(), new NFAState(true)) {
+Concat::Concat(std::vector<NFA>&& operands) : NFA(std::make_unique<NFAState>(), std::make_unique<NFAState>(true)) {
     if (operands.size() < 1) {
         throw "Concat expects at least one operator";
     }
@@ -107,23 +95,23 @@ Concat::Concat(std::vector<NFA>&& operands) : NFA(new NFAState(), new NFAState(t
         // connect pieces of the chain together
         operands.at(i).m_endState->addTransition('\0', operands.at(i + 1).m_startState);
         operands.at(i).m_endState->m_accepting = false;
-        m_states.insert(operands.at(i).m_states.begin(), operands.at(i).m_states.end());
+        m_states.merge(std::move(operands.at(i).m_states));
         operands.at(i).m_states.clear();
     }
     m_alphabet.insert(backOfChain.m_alphabet.begin(), backOfChain.m_alphabet.end());
     // connect end of the chain to end state
-    m_states.insert(backOfChain.m_states.begin(), backOfChain.m_states.end());
+    m_states.merge(std::move(backOfChain.m_states));
     backOfChain.m_states.clear();
     backOfChain.m_endState->m_accepting = false;
     backOfChain.m_endState->addTransition('\0', m_endState);
 }
 
-Kleenestar::Kleenestar(NFA operand): NFA(new NFAState(true)) {
+Kleenestar::Kleenestar(NFA operand): NFA(std::make_unique<NFAState>(true)) {
     m_alphabet = std::move(operand.m_alphabet);
     operand.m_endState->m_accepting = false;
     m_startState->addTransition('\0', operand.m_startState);
     operand.m_endState->addTransition('\0', m_startState);
-    m_states.insert(operand.m_states.begin(), operand.m_states.end());
+    m_states.merge(std::move(operand.m_states));
     operand.m_states.clear();
 }
 
