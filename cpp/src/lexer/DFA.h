@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <tuple>
 #include "NFA.h"
 #include "State.h"
 #include "Utils.h"

@@ -61,6 +61,15 @@ NFA& NFA::operator=(NFA&& other) {
     return *this;
 }
 
+template <class It>
+void NFA::addTokens(It begin, It end) {
+    m_endState->addTokens(begin, end);
+}
+
+void NFA::addTokens(const Token& token) {
+    m_endState->addTokens(token);
+}
+
 Atom::Atom(const char charToRecognize) : NFA(std::make_unique<NFAState>(), std::make_unique<NFAState>(true)) {
     m_startState->addTransition(charToRecognize, m_endState);
     m_alphabet.insert(charToRecognize);

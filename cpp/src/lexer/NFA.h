@@ -33,6 +33,11 @@ public:
     NFA(NFA&& other);
     NFA& operator=(const NFA& other);
     NFA& operator=(NFA&& other);
+
+    template <class It>
+    void addTokens(It begin, It end);
+
+    void addTokens(const Token& token);
 };
 
 class Atom : public NFA {

@@ -139,27 +139,53 @@ std::vector<Token> DFA::tokenize(const std::string& inputStr) {
     if (inputStr.empty()) {
         return std::vector<Token>{};
     }
-    std::vector<int> acceptStack{0};
+
+    bool passedAcceptState = false;
+    int lastCharacterAccepted = -1;
+    int lastCharacterTokenized = -1;
+    DFAState* lastAcceptState = nullptr;
+    std::string lastAcceptLexme;
+
     std::vector<Token> result;
 
     DFAState* currState = m_startState;
     std::string currLexme{""};
-    for (int i = 0; i < inputStr.size(); i++) {
-        char transitionChar = inputStr.at(i);
-        if (currState->m_transitions.find(transitionChar) != currState->m_transitions.end()) {
-            currState = currState->m_transitions.at(transitionChar);
-            if (currState->m_accepting) {
-                acceptStack.push_back(i+1);
+    for (int i = 0; i <= inputStr.size(); i++) {
+        bool transitionFailure = false;
+        // if at end of string
+        if (i == inputStr.size()) {
+            // if entire string has been accepted
+            if (lastCharacterTokenized == i-1) {
+                break;
+            } else {
+                transitionFailure = true;
             }
+        } else {
+            char transitionChar = inputStr.at(i);
             currLexme.push_back(transitionChar);
-        } else if (currState->m_accepting) {
-            if (!currLexme.empty()) {
-                result.push_back(currState->resolveToken());
-                result.back().setLexme(std::move(currLexme));
-                currState = m_startState;
-                i -= 1;
+            transitionFailure = currState->m_transitions.find(transitionChar) == currState->m_transitions.end();
+        }
+
+        if (!transitionFailure) {
+            currState = currState->m_transitions.at(inputStr.at(i));
+            if (currState->m_accepting) {
+                lastCharacterAccepted = i;
+                lastAcceptState = currState;
+                lastAcceptLexme = currLexme;
+                passedAcceptState = true;
             }
-            // fail
+        } else if (passedAcceptState) {
+            i = lastCharacterAccepted;
+            lastCharacterTokenized = lastCharacterAccepted;
+            result.push_back(lastAcceptState->resolveToken());
+            result.back().setLexme(lastAcceptLexme);
+            lastAcceptLexme = "";
+            currLexme = "";
+            currState = m_startState;
+            passedAcceptState = false;
+        } else {
+            std::cout << "FAIL: " << lastCharacterAccepted << std::endl;
+            break;
         }
     }
 

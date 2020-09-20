@@ -63,7 +63,7 @@ public:
 
     Token resolveToken() {
         if (m_tokens.empty()) {
-            throw "DFAState contains 0 tokens";
+            throw "No tokens found";
         }
         int highestPriorty = 0;
         Token tokenToReturn = *(m_tokens.begin());

@@ -5,10 +5,15 @@
 #include "lexer/NFA.h"
 
 int main() {
-    Concat abc{std::vector<NFA>{{Atom{'a'},Atom{'b'}, Atom{'c'}}}};
-    DFA ABC{abc};
-    std::cout << ABC.match("abc") << std::endl;
-    std::cout << ABC.match("abcd") << std::endl;
-    std::cout << ABC.match("") << std::endl;
+
+    NFA abc = Concat(std::vector<NFA>{Atom('a'), Atom('b'), Atom('c')});
+
+    DFA test = DFA(abc);
+
+    std::vector<Token> tokens = test.tokenize("abcabcabcabcabcabc");
+
+    for (auto token : tokens) {
+        std::cout << token.m_type << " : " << token.m_lexme << ", " << std::endl;
+    }
     return 0;
 }
